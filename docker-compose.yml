@@ -1,0 +1,76 @@
+name: seans-playground
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: seans-playground-postgres
+    environment:
+      POSTGRES_DB: seans_playground
+      POSTGRES_USER: seans_playground
+      POSTGRES_PASSWORD: seans_playground
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./infrastructure/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U seans_playground -d seans_playground"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.0
+    container_name: seans-playground-keycloak
+    command: ["start-dev", "--import-realm"]
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+      KC_HTTP_ENABLED: "true"
+      KC_HTTP_PORT: 8080
+      KC_HOSTNAME_STRICT: "false"
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./infrastructure/keycloak/seans-playground-realm.json:/opt/keycloak/data/import/seans-playground-realm.json:ro
+
+  api:
+    build:
+      context: .
+      dockerfile: src/SeansPlayground.Api/Dockerfile
+    container_name: seans-playground-api
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__Postgres: Host=postgres;Port=5432;Database=seans_playground;Username=seans_playground;Password=seans_playground
+      Authentication__Authority: http://keycloak:8080/realms/seans-playground
+      Authentication__Audience: seans-playground-api
+      Authentication__RequireHttpsMetadata: "false"
+      Cors__AllowedOrigins__0: http://localhost:3000
+      Cors__AllowedOrigins__1: http://127.0.0.1:3000
+    ports:
+      - "5100:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      keycloak:
+        condition: service_started
+
+  web:
+    build:
+      context: .
+      dockerfile: src/SeansPlayground.Web/Dockerfile
+      args:
+        VITE_API_BASE_URL: http://localhost:5100
+        VITE_KEYCLOAK_AUTHORITY: http://localhost:8080/realms/seans-playground
+        VITE_KEYCLOAK_ADMIN_URL: http://localhost:8080/admin/seans-playground/console/
+        VITE_KEYCLOAK_CLIENT_ID: seans-playground-web
+    container_name: seans-playground-web
+    ports:
+      - "3000:80"
+    depends_on:
+      - api
+      - keycloak
+
+volumes:
+  postgres-data:

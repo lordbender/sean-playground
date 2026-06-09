@@ -1,0 +1,545 @@
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  background: #f3f5fb;
+}
+
+.brandMark {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 178px;
+}
+
+.brandIcon {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  grid-template-columns: repeat(3, 5px);
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  border-radius: 50%;
+  background: #ffffff;
+}
+
+.brandIcon span {
+  width: 5px;
+  height: 18px;
+  display: block;
+  border-radius: 99px;
+  background: #3367f6;
+  transform: rotate(15deg);
+}
+
+.brandIcon span:nth-child(2) {
+  background: #1f2433;
+}
+
+.appShell {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1fr);
+  grid-template-rows: 64px minmax(0, 1fr);
+}
+
+.topBar {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 0 24px;
+  background: #3367f6;
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(44, 57, 88, 0.28);
+  z-index: 2;
+}
+
+.topBar .brandMark {
+  color: #ffffff;
+}
+
+.topIconButton {
+  color: #ffffff !important;
+}
+
+.searchField {
+  width: min(280px, 30vw);
+  margin-left: auto !important;
+}
+
+.searchField .MuiOutlinedInput-root {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.searchField .MuiOutlinedInput-notchedOutline {
+  border: 0;
+}
+
+.searchField input::placeholder,
+.searchField svg {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.profileMenuHeader {
+  min-width: 220px;
+  padding: 12px 16px;
+  border-bottom: 1px solid #eef1f6;
+}
+
+.sideRail {
+  padding: 28px 10px;
+  background: #ffffff;
+  box-shadow: 8px 0 24px rgba(35, 46, 76, 0.06);
+}
+
+.navSection {
+  margin-bottom: 26px;
+}
+
+.navEyebrow {
+  padding: 0 14px;
+  color: #3367f6;
+  font-size: 11px !important;
+  font-weight: 800 !important;
+  text-transform: uppercase;
+}
+
+.navCaption {
+  padding: 2px 14px 10px;
+  color: #1d2433;
+  font-size: 13px !important;
+}
+
+.navItem {
+  justify-content: flex-start !important;
+  min-height: 56px !important;
+  padding: 0 16px !important;
+  color: #1f2937 !important;
+}
+
+.navItem.active {
+  color: #3367f6 !important;
+  background: #e3f2ff !important;
+}
+
+.navItem .MuiButton-endIcon {
+  margin-left: auto;
+}
+
+.dashboardSurface {
+  padding: 36px 40px 48px;
+  overflow: auto;
+}
+
+.dashboardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 22px;
+}
+
+.metricGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(180px, 1fr));
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.metricCard {
+  min-height: 154px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.metricCardBody {
+  min-height: 108px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px;
+}
+
+.metricValue {
+  font-size: 26px !important;
+  font-weight: 800 !important;
+  color: #3367f6;
+}
+
+.metricCard.warning .metricValue,
+.metricCard.warning .metricIcon {
+  color: #f5a400;
+}
+
+.metricCard.error .metricValue,
+.metricCard.error .metricIcon {
+  color: #ff3d3d;
+}
+
+.metricCard.success .metricValue,
+.metricCard.success .metricIcon {
+  color: #00b877;
+}
+
+.metricLabel {
+  color: #1d2433;
+  font-weight: 700 !important;
+}
+
+.metricIcon {
+  width: 36px !important;
+  height: 36px !important;
+}
+
+.metricFooter {
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 20px;
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.metricCard.primary .metricFooter {
+  background: #3367f6;
+}
+
+.metricCard.warning .metricFooter {
+  background: #f5a400;
+}
+
+.metricCard.error .metricFooter {
+  background: #ff3d3d;
+}
+
+.metricCard.success .metricFooter {
+  background: #00b877;
+}
+
+.panelGrid {
+  display: grid;
+  grid-template-columns: minmax(300px, 1fr) minmax(300px, 1fr) minmax(300px, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.salesStack {
+  display: grid;
+  gap: 22px;
+}
+
+.salesCard {
+  overflow: hidden;
+}
+
+.salesHeader {
+  min-height: 72px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 24px;
+  color: #ffffff;
+  background: #3367f6;
+}
+
+.salesChange {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.salesLine {
+  width: 100%;
+  height: 126px;
+  display: block;
+  padding: 8px 24px 0;
+  background: #3367f6;
+}
+
+.salesFooter {
+  min-height: 102px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  text-align: center;
+  background: #ffffff;
+}
+
+.salesNumber {
+  font-size: 20px !important;
+  font-weight: 800 !important;
+}
+
+.mutedText {
+  color: #647084;
+}
+
+.signalCard {
+  min-height: 76px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.signalItem {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  border-right: 1px solid #eef1f6;
+}
+
+.signalItem:last-child {
+  border-right: 0;
+}
+
+.signalName {
+  color: #1d2433;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  text-transform: uppercase;
+}
+
+.signalValue {
+  font-size: 20px !important;
+  font-weight: 800 !important;
+}
+
+.panelCard {
+  min-height: 396px;
+}
+
+.revenueBody {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 32px 24px 24px;
+}
+
+.donut {
+  width: 142px;
+  height: 142px;
+  border-radius: 50%;
+  position: relative;
+}
+
+.donut::after {
+  content: "";
+  position: absolute;
+  inset: 36px;
+  border-radius: 50%;
+  background: #ffffff;
+}
+
+.legendRow {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+}
+
+.legendItem span {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.channelGrid {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  padding-top: 2px;
+}
+
+.positiveText {
+  color: #14895a;
+  font-weight: 800 !important;
+}
+
+.warningText {
+  color: #c99700;
+  font-weight: 800 !important;
+}
+
+.trafficList {
+  display: grid;
+  gap: 26px;
+  padding: 28px 24px;
+}
+
+.trafficLabelRow {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.loginPage {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: minmax(320px, 440px) minmax(0, 1fr);
+  align-items: center;
+  gap: 64px;
+  padding: 48px clamp(24px, 6vw, 96px);
+  background: #f3f5fb;
+}
+
+.loginPanel {
+  display: grid;
+  gap: 40px;
+  padding: 42px;
+  border: 1px solid #e6e9f1;
+}
+
+.loginPanel .brandMark {
+  color: #1d2433;
+}
+
+.loginTitle {
+  margin-bottom: 12px !important;
+  color: #1d2433;
+  font-size: clamp(32px, 6vw, 52px) !important;
+  line-height: 1.04 !important;
+  letter-spacing: 0 !important;
+}
+
+.loginCopy {
+  color: #647084;
+  font-size: 17px !important;
+  line-height: 1.6 !important;
+}
+
+.loginPreview {
+  min-height: 520px;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 24px 54px rgba(35, 46, 76, 0.14);
+  overflow: hidden;
+}
+
+.previewTop {
+  height: 64px;
+  background: #3367f6;
+}
+
+.previewGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 22px;
+  padding: 40px;
+}
+
+.previewGrid span {
+  height: 126px;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #ffffff 0%, #f5f7fc 100%);
+  box-shadow: 0 8px 18px rgba(29, 36, 51, 0.1);
+}
+
+.previewChart {
+  height: 220px;
+  margin: 0 40px 40px;
+  border-radius: 8px;
+  background:
+    linear-gradient(90deg, transparent 64%, #ffffff 64%),
+    linear-gradient(135deg, #3367f6 0%, #3367f6 58%, #ffffff 58%);
+  box-shadow: 0 8px 18px rgba(29, 36, 51, 0.1);
+}
+
+.loadingPanel {
+  min-height: 220px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 8px 18px rgba(29, 36, 51, 0.1);
+  color: #647084;
+  font-weight: 700;
+}
+
+@media (max-width: 1180px) {
+  .appShell {
+    grid-template-columns: 232px minmax(0, 1fr);
+  }
+
+  .metricGrid,
+  .panelGrid {
+    grid-template-columns: repeat(2, minmax(240px, 1fr));
+  }
+}
+
+@media (max-width: 780px) {
+  .appShell {
+    grid-template-columns: 1fr;
+    grid-template-rows: 64px auto minmax(0, 1fr);
+  }
+
+  .topBar {
+    padding: 0 14px;
+    gap: 8px;
+  }
+
+  .topBar .brandMark {
+    min-width: 0;
+  }
+
+  .topBar .brandMark .MuiTypography-root {
+    display: none;
+  }
+
+  .searchField {
+    width: min(210px, 42vw);
+  }
+
+  .sideRail {
+    grid-row: 2;
+    display: flex;
+    overflow-x: auto;
+    gap: 16px;
+    padding: 12px;
+  }
+
+  .navSection {
+    min-width: 200px;
+    margin-bottom: 0;
+  }
+
+  .dashboardSurface {
+    padding: 24px 16px 36px;
+  }
+
+  .dashboardHeader {
+    align-items: flex-start;
+  }
+
+  .metricGrid,
+  .panelGrid,
+  .loginPage {
+    grid-template-columns: 1fr;
+  }
+
+  .loginPreview {
+    display: none;
+  }
+}

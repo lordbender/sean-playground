@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/SeansPlayground.Api/SeansPlayground.Api.csproj" />
+    <Project Path="src/SeansPlayground.Contracts/SeansPlayground.Contracts.csproj" />
+    <Project Path="src/SeansPlayground.Core/SeansPlayground.Core.csproj" />
+    <Project Path="src/SeansPlayground.Services/SeansPlayground.Services.csproj" />
+  </Folder>
+</Solution>

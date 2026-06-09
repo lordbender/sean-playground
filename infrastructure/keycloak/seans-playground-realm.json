@@ -1,0 +1,123 @@
+{
+  "realm": "seans-playground",
+  "enabled": true,
+  "displayName": "Sean's Playground",
+  "sslRequired": "none",
+  "registrationAllowed": true,
+  "registrationEmailAsUsername": false,
+  "loginWithEmailAllowed": true,
+  "verifyEmail": false,
+  "defaultRoles": [
+    "Users"
+  ],
+  "roles": {
+    "realm": [
+      {
+        "name": "Admins",
+        "description": "Site administrators with access to Sean's Playground and Keycloak realm administration."
+      },
+      {
+        "name": "Friends",
+        "description": "Trusted friends with elevated site access."
+      },
+      {
+        "name": "Users",
+        "description": "Default public registration role."
+      }
+    ]
+  },
+  "clients": [
+    {
+      "clientId": "seans-playground-web",
+      "name": "Sean's Playground Web",
+      "enabled": true,
+      "publicClient": true,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "implicitFlowEnabled": false,
+      "serviceAccountsEnabled": false,
+      "rootUrl": "http://localhost:3000",
+      "baseUrl": "http://localhost:3000",
+      "redirectUris": [
+        "http://localhost:3000/*"
+      ],
+      "webOrigins": [
+        "http://localhost:3000"
+      ],
+      "attributes": {
+        "pkce.code.challenge.method": "S256"
+      }
+    },
+    {
+      "clientId": "seans-playground-api",
+      "name": "Sean's Playground API",
+      "enabled": true,
+      "bearerOnly": true,
+      "protocol": "openid-connect"
+    }
+  ],
+  "users": [
+    {
+      "username": "sean",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Sean",
+      "lastName": "Playground",
+      "email": "sean@example.local",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "playground",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "Admins",
+        "Users"
+      ],
+      "clientRoles": {
+        "realm-management": [
+          "realm-admin"
+        ]
+      }
+    },
+    {
+      "username": "friend",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Playground",
+      "lastName": "Friend",
+      "email": "friend@example.local",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "playground",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "Friends",
+        "Users"
+      ]
+    },
+    {
+      "username": "user",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Playground",
+      "lastName": "User",
+      "email": "user@example.local",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "playground",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "Users"
+      ]
+    }
+  ]
+}
