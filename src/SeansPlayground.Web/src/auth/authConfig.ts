@@ -9,7 +9,7 @@ export function createRegistrationUrl() {
   const params = new URLSearchParams({
     client_id: clientId,
     response_type: "code",
-    scope: "openid profile email",
+    scope: "openid profile email roles",
     redirect_uri: `${window.location.origin}/`
   });
 
@@ -22,6 +22,6 @@ export const userManager = new UserManager({
   redirect_uri: `${window.location.origin}/`,
   post_logout_redirect_uri: `${window.location.origin}/`,
   response_type: "code",
-  scope: "openid profile email",
+  scope: "openid profile email roles",
   userStore: new WebStorageStateStore({ store: window.localStorage })
 });

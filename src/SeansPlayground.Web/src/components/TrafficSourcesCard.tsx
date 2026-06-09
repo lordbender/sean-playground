@@ -23,7 +23,7 @@ export function TrafficSourcesCard({ sources }: { sources: TrafficSource[] }) {
               value={source.percentage}
               sx={{
                 height: 4,
-                backgroundColor: "#c1c7d0",
+                backgroundColor: "rgba(91, 26, 142, 0.16)",
                 "& .MuiLinearProgress-bar": {
                   backgroundColor: source.accent
                 }
@@ -35,4 +35,3 @@ export function TrafficSourcesCard({ sources }: { sources: TrafficSource[] }) {
     </Card>
   );
 }
-

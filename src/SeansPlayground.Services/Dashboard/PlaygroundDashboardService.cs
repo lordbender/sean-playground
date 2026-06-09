@@ -24,27 +24,26 @@ public sealed class PlaygroundDashboardService : IPlaygroundDashboardService
         var revenueBreakdown = new RevenueBreakdownDto(
             30200,
             [
-                new("Youtube", 46.85m, "#ff3d3d"),
-                new("Facebook", 45.36m, "#3367f6"),
-                new("Twitter", 7.79m, "#15b8a6")
+                new("Krewe", 46.85m, "#5b1a8e"),
+                new("Parade", 45.36m, "#00843d"),
+                new("Throws", 7.79m, "#f2c14e")
             ]);
 
         TrafficSourceDto[] trafficSources =
         [
-            new("Direct", 80, "#3367f6"),
-            new("Social", 50, "#2b3f52"),
-            new("Referral", 20, "#3367f6"),
-            new("Bounce", 60, "#2b3f52"),
-            new("Internet", 40, "#3367f6")
+            new("Direct", 80, "#5b1a8e"),
+            new("Social", 50, "#00843d"),
+            new("Referral", 20, "#f2c14e"),
+            new("Bounce", 60, "#c91f6a"),
+            new("Internet", 40, "#35104f")
         ];
 
         MarketSignalDto[] marketSignals =
         [
-            new("Reality", -0.99m, "#ff3d57"),
-            new("Infra", -7.66m, "#0fb16f")
+            new("Masquerade", -0.99m, "#c91f6a"),
+            new("Beads", -7.66m, "#00843d")
         ];
 
         return new DashboardSummaryResponse(metrics, salesTrend, revenueBreakdown, trafficSources, marketSignals);
     }
 }
-
