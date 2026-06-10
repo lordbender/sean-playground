@@ -5,4 +5,7 @@
     <Project Path="src/SeansPlayground.Core/SeansPlayground.Core.csproj" />
     <Project Path="src/SeansPlayground.Services/SeansPlayground.Services.csproj" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/SeansPlayground.Tests/SeansPlayground.Tests.csproj" />
+  </Folder>
 </Solution>

@@ -8,7 +8,7 @@ API_STATUS_URL := http://localhost:5100/api/system/status
 WEB_URL := http://localhost:3000/
 KEYCLOAK_URL := http://localhost:8080/realms/seans-playground/.well-known/openid-configuration
 
-.PHONY: help install build build-api build-web e2e e2e-headed up down restart ps logs logs-api logs-web logs-keycloak logs-postgres smoke deploy-sacrates-cave clean
+.PHONY: help install build build-api build-web test e2e e2e-headed up down restart ps logs logs-api logs-web logs-keycloak logs-postgres smoke deploy-sacrates-cave clean
 
 help:
 	@printf "%s\n" "Sean's Playground targets:"
@@ -16,6 +16,7 @@ help:
 	@printf "%s\n" "  make build          Build .NET solution and React app"
 	@printf "%s\n" "  make build-api      Build the .NET solution"
 	@printf "%s\n" "  make build-web      Build the Vite React app"
+	@printf "%s\n" "  make test           Run .NET tests"
 	@printf "%s\n" "  make e2e            Run Playwright E2E tests against the local Docker stack"
 	@printf "%s\n" "  make e2e-headed     Run Playwright E2E tests with a visible browser"
 	@printf "%s\n" "  make up             Build and start the Docker stack"
@@ -38,6 +39,9 @@ build-api:
 
 build-web:
 	npm run build --prefix $(WEB_DIR)
+
+test:
+	dotnet test $(SOLUTION)
 
 e2e: up
 	npm run e2e --prefix $(WEB_DIR)

@@ -55,6 +55,14 @@ Run a smoke check:
 make smoke
 ```
 
+Run the .NET test suite:
+
+```bash
+make test
+```
+
+The .NET tests include Postgres-backed integration coverage. They start a disposable `postgres:16-alpine` container with Testcontainers, apply EF migrations, verify migration-owned seed data, and exercise the EF-backed `BackgroundService`.
+
 Run the authenticated browser E2E check:
 
 ```bash
@@ -92,6 +100,12 @@ make build
 ```
 
 Builds the .NET solution and the Vite frontend.
+
+```bash
+make test
+```
+
+Runs the .NET test suite. Docker must be running because the EF integration tests use Testcontainers.
 
 ```bash
 make e2e
