@@ -4,6 +4,7 @@ Local .NET 10 API, shared contracts, service layer, core project, Vite React fro
 
 ## Documentation
 
+- [Architecture](docs/architecture.md): stack topology, Cloudflare, Coraza WAF, Docker services, Grafana, and data flows.
 - [Developer Guide](docs/developer-guide.md): local setup, Docker workflow, Keycloak users, Postgres, pgAdmin, and troubleshooting.
 
 ## Projects
