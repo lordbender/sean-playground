@@ -47,7 +47,7 @@ Coraza WAF / Caddy reverse proxy container
 | --- | --- | --- |
 | Frontend | Vite, React, TypeScript, Material UI | Authenticated dashboard shell, APOD/DONKI views, background/resume pages, markdown docs viewer |
 | API | ASP.NET Core | REST endpoints, JWT validation, health checks, NASA dashboard API, registration API |
-| API specs | OpenAPI, Swagger UI | Local API contract JSON and interactive endpoint explorer |
+| API specs | OpenAPI, Swagger UI | API contract JSON and interactive endpoint explorer |
 | Contracts | C# shared contracts project | Typed API response/request models shared by services and API |
 | Services | C# service project | NASA ingestion, dashboard reads, Keycloak user creation, background/profile reads |
 | Core | C# core project | EF Core entities, DbContext, migrations, domain constants |
@@ -176,7 +176,7 @@ It preserves the remote `.env`, rebuilds `docker-compose.home.yml`, and verifies
 | `https://sean.vertical-stack.com/api/nasa/apod/latest/image` | Latest stored APOD image bytes |
 | `https://eyes.vertical-stack.com/` | Grafana stack on the same home server |
 
-Local development also exposes Swagger UI at `http://localhost:5100/swagger` and the OpenAPI JSON at `http://localhost:5100/swagger/v1/swagger.json`.
+Swagger UI is available at `http://localhost:5100/api/swagger` locally and `https://sean.vertical-stack.com/api/swagger` on the home server. The Swagger JSON is served at `/api/swagger/v1/swagger.json`.
 
 ## Operational Notes
 

@@ -1,5 +1,6 @@
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
 import AdminPanelSettingsOutlinedIcon from "@mui/icons-material/AdminPanelSettingsOutlined";
+import ApiOutlinedIcon from "@mui/icons-material/ApiOutlined";
 import DashboardOutlinedIcon from "@mui/icons-material/DashboardOutlined";
 import HelpOutlineOutlinedIcon from "@mui/icons-material/HelpOutlineOutlined";
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
@@ -23,6 +24,9 @@ import { AppSection } from "../App";
 import { useAuth } from "../auth/AuthProvider";
 import { keycloakAdminUrl } from "../auth/authConfig";
 import { BrandMark } from "./BrandMark";
+
+const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL ?? "http://localhost:5100").replace(/\/$/, "");
+const swaggerDocsUrl = `${apiBaseUrl}/api/swagger`;
 
 type NavItem = {
   label: string;
@@ -79,6 +83,11 @@ export function DashboardLayout({
   const openKeycloakAdmin = () => {
     closeProfileMenu();
     window.open(keycloakAdminUrl, "_blank", "noopener,noreferrer");
+  };
+
+  const openSwaggerDocs = () => {
+    closeProfileMenu();
+    window.open(swaggerDocsUrl, "_blank", "noopener,noreferrer");
   };
 
   const handleSignOut = async () => {
@@ -152,6 +161,12 @@ export function DashboardLayout({
               Manage Keycloak
             </MenuItem>
           ) : null}
+          <MenuItem onClick={openSwaggerDocs}>
+            <ListItemIcon>
+              <ApiOutlinedIcon fontSize="small" />
+            </ListItemIcon>
+            API Swagger Docs
+          </MenuItem>
           <MenuItem onClick={handleSignOut}>
             <ListItemIcon>
               <LogoutOutlinedIcon fontSize="small" />

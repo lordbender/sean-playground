@@ -46,8 +46,8 @@ Then open:
 
 - Web: `http://localhost:3000`
 - API health: `http://localhost:5100/health`
-- Swagger UI: `http://localhost:5100/swagger`
-- OpenAPI spec: `http://localhost:5100/swagger/v1/swagger.json`
+- Swagger UI: `http://localhost:5100/api/swagger`
+- OpenAPI spec: `http://localhost:5100/api/swagger/v1/swagger.json`
 - .NET OpenAPI document: `http://localhost:5100/openapi/v1.json`
 - Keycloak: `http://localhost:8080`
 - Postgres: `localhost:5432`
@@ -163,7 +163,7 @@ home-coraza-waf_waf_private
 The WAF routes `sean.vertical-stack.com` as:
 
 - `/realms/*`, `/resources/*`, and `/admin/*` to Keycloak.
-- `/api/*` and `/health` to the ASP.NET Core API.
+- `/api/*` and `/health` to the ASP.NET Core API, including Swagger at `/api/swagger`.
 - Everything else to the React/nginx web container.
 
 The deployed frontend is built with:
@@ -215,15 +215,15 @@ The frontend expects:
 
 ## API Specs
 
-The API publishes OpenAPI specs and Swagger UI in the local Development environment:
+The API publishes OpenAPI specs and Swagger UI:
 
-- Swagger UI: `http://localhost:5100/swagger`
-- Swagger JSON: `http://localhost:5100/swagger/v1/swagger.json`
+- Swagger UI: `http://localhost:5100/api/swagger`
+- Swagger JSON: `http://localhost:5100/api/swagger/v1/swagger.json`
 - .NET OpenAPI JSON: `http://localhost:5100/openapi/v1.json`
 
-The Swagger document includes a Bearer security scheme. For protected endpoints, sign in through Keycloak, copy a Keycloak access token, and use the `Authorize` button in Swagger UI.
+All signed-in site users can open Swagger from the profile menu. The public home-server URL is `https://sean.vertical-stack.com/api/swagger`.
 
-Swagger is intentionally local/development-only unless the API environment or hosting policy is changed later.
+The Swagger document includes a Bearer security scheme. For protected endpoints, sign in through Keycloak, copy a Keycloak access token, and use the `Authorize` button in Swagger UI.
 
 ## Database
 

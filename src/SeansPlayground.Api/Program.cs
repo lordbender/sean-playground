@@ -79,13 +79,18 @@ await using (var scope = app.Services.CreateAsyncScope())
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
-    app.UseSwagger();
-    app.UseSwaggerUI(options =>
-    {
-        options.DocumentTitle = "Sean's Playground API";
-        options.SwaggerEndpoint("/swagger/v1/swagger.json", "Sean's Playground API v1");
-    });
 }
+
+app.UseSwagger(options =>
+{
+    options.RouteTemplate = "api/swagger/{documentName}/swagger.json";
+});
+app.UseSwaggerUI(options =>
+{
+    options.DocumentTitle = "Sean's Playground API";
+    options.RoutePrefix = "api/swagger";
+    options.SwaggerEndpoint("/api/swagger/v1/swagger.json", "Sean's Playground API v1");
+});
 
 app.UseCors("Frontend");
 app.UseAuthentication();
