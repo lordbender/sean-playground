@@ -48,6 +48,10 @@ services:
       Authentication__RequireHttpsMetadata: "false"
       Authentication__ValidIssuers__0: http://localhost:8080/realms/seans-playground
       Authentication__ValidIssuers__1: http://keycloak:8080/realms/seans-playground
+      KeycloakAdmin__BaseUrl: http://keycloak:8080
+      KeycloakAdmin__Realm: seans-playground
+      KeycloakAdmin__Username: ${KEYCLOAK_ADMIN_USERNAME:-admin}
+      KeycloakAdmin__Password: ${KEYCLOAK_ADMIN_PASSWORD:-admin}
       Cors__AllowedOrigins__0: http://localhost:3000
       Cors__AllowedOrigins__1: http://127.0.0.1:3000
     ports:

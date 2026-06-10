@@ -1,13 +1,12 @@
 import { User } from "oidc-client-ts";
 import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { createRegistrationUrl, userManager } from "./authConfig";
+import { userManager } from "./authConfig";
 
 type AuthContextValue = {
   user: User | null;
   isAuthenticated: boolean;
   isAdmin: boolean;
   signIn: () => Promise<void>;
-  register: () => void;
   signOut: () => Promise<void>;
   completeSignIn: () => Promise<void>;
 };
@@ -27,10 +26,6 @@ export function AuthProvider({ children }: PropsWithChildren) {
 
   const signIn = useCallback(() => userManager.signinRedirect(), []);
 
-  const register = useCallback(() => {
-    window.location.assign(createRegistrationUrl());
-  }, []);
-
   const signOut = useCallback(async () => {
     setUser(null);
     await userManager.signoutRedirect();
@@ -48,11 +43,10 @@ export function AuthProvider({ children }: PropsWithChildren) {
       isAuthenticated: Boolean(user && !user.expired),
       isAdmin: hasRealmRole(user, "Admins"),
       signIn,
-      register,
       signOut,
       completeSignIn
     }),
-    [completeSignIn, register, signIn, signOut, user]
+    [completeSignIn, signIn, signOut, user]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -57,6 +57,10 @@ services:
       Authentication__RequireHttpsMetadata: "false"
       Authentication__ValidIssuers__0: https://sean.vertical-stack.com/realms/seans-playground
       Authentication__ValidIssuers__1: http://keycloak:8080/realms/seans-playground
+      KeycloakAdmin__BaseUrl: http://keycloak:8080
+      KeycloakAdmin__Realm: seans-playground
+      KeycloakAdmin__Username: ${KEYCLOAK_ADMIN_USERNAME:-admin}
+      KeycloakAdmin__Password: ${KEYCLOAK_ADMIN_PASSWORD}
       Cors__AllowedOrigins__0: https://sean.vertical-stack.com
     depends_on:
       postgres:

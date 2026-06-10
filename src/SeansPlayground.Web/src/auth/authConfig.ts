@@ -5,17 +5,6 @@ export const clientId = import.meta.env.VITE_KEYCLOAK_CLIENT_ID ?? "seans-playgr
 export const keycloakAdminUrl =
   import.meta.env.VITE_KEYCLOAK_ADMIN_URL ?? "http://localhost:8080/admin/seans-playground/console/";
 
-export function createRegistrationUrl() {
-  const params = new URLSearchParams({
-    client_id: clientId,
-    response_type: "code",
-    scope: "openid profile email roles",
-    redirect_uri: `${window.location.origin}/`
-  });
-
-  return `${authority}/protocol/openid-connect/registrations?${params.toString()}`;
-}
-
 export const userManager = new UserManager({
   authority,
   client_id: clientId,

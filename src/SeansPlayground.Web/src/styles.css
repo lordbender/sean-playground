@@ -507,6 +507,12 @@ body {
   box-shadow: var(--sp-shadow);
 }
 
+.registrationNameGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
 .loadingPanel {
   min-height: 220px;
   display: grid;
@@ -964,6 +970,7 @@ body {
   .backgroundGrid,
   .educationGrid,
   .documentationShell,
+  .registrationNameGrid,
   .loginPage {
     grid-template-columns: 1fr;
   }
