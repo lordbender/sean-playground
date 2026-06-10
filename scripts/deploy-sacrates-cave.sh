@@ -4,18 +4,25 @@ set -eu
 ROOT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 LOCAL_ENV_FILE="${ROOT_DIR}/.env"
 
-if [ -f "$LOCAL_ENV_FILE" ]; then
-    set -a
-    # shellcheck disable=SC1090
-    . "$LOCAL_ENV_FILE"
-    set +a
-fi
+read_local_env() {
+    key="$1"
 
-REMOTE_HOST="${SEANS_PLAYGROUND_LOCAL_DEV_SERVER:-}"
-REMOTE_DIR="${SEANS_PLAYGROUND_REMOTE_DIR:-/home/swillison/source/applications/seans-playground}"
-REMOTE_DOCKER_CONFIG="${SEANS_PLAYGROUND_REMOTE_DOCKER_CONFIG:-/tmp/seans-playground-docker-config}"
-PUBLIC_URL="${SEANS_PLAYGROUND_PUBLIC_URL:-https://sean.vertical-stack.com}"
-SSH_OPTS="${SEANS_PLAYGROUND_SSH_OPTS:-}"
+    if [ ! -f "$LOCAL_ENV_FILE" ]; then
+        return 0
+    fi
+
+    grep -E "^${key}=" "$LOCAL_ENV_FILE" | tail -n 1 | cut -d= -f2-
+}
+
+REMOTE_HOST="${SEANS_PLAYGROUND_LOCAL_DEV_SERVER:-$(read_local_env SEANS_PLAYGROUND_LOCAL_DEV_SERVER)}"
+REMOTE_DIR="${SEANS_PLAYGROUND_REMOTE_DIR:-$(read_local_env SEANS_PLAYGROUND_REMOTE_DIR)}"
+REMOTE_DOCKER_CONFIG="${SEANS_PLAYGROUND_REMOTE_DOCKER_CONFIG:-$(read_local_env SEANS_PLAYGROUND_REMOTE_DOCKER_CONFIG)}"
+PUBLIC_URL="${SEANS_PLAYGROUND_PUBLIC_URL:-$(read_local_env SEANS_PLAYGROUND_PUBLIC_URL)}"
+SSH_OPTS="${SEANS_PLAYGROUND_SSH_OPTS:-$(read_local_env SEANS_PLAYGROUND_SSH_OPTS)}"
+
+REMOTE_DIR="${REMOTE_DIR:-/home/swillison/source/applications/seans-playground}"
+REMOTE_DOCKER_CONFIG="${REMOTE_DOCKER_CONFIG:-/tmp/seans-playground-docker-config}"
+PUBLIC_URL="${PUBLIC_URL:-https://sean.vertical-stack.com}"
 
 if [ -z "$REMOTE_HOST" ]; then
     printf "%s\n" "SEANS_PLAYGROUND_LOCAL_DEV_SERVER is required. Set it in .env or the environment." >&2
@@ -55,9 +62,9 @@ REMOTE
 rsync -az --delete \
     -e "ssh ${SSH_OPTS}" \
     --exclude ".git/" \
+    --include ".env.example" \
     --exclude ".env" \
     --exclude ".env.*" \
-    --exclude "!.env.example" \
     --exclude "node_modules/" \
     --exclude "bin/" \
     --exclude "obj/" \
