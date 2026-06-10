@@ -2,6 +2,10 @@
 
 Local .NET 10 API, shared contracts, service layer, core project, Vite React frontend, Material UI dashboard, Postgres, and Keycloak.
 
+## Documentation
+
+- [Developer Guide](docs/developer-guide.md): local setup, Docker workflow, Keycloak users, Postgres, pgAdmin, and troubleshooting.
+
 ## Projects
 
 - `SeansPlayground.Api`: ASP.NET Core API with dashboard and system status endpoints.
