@@ -16,9 +16,9 @@ This guide covers local development for Sean's Playground: the .NET API, Vite Re
 - `src/SeansPlayground.Api`: ASP.NET Core API.
 - `src/SeansPlayground.Contracts`: shared API DTOs.
 - `src/SeansPlayground.Services`: injected application services.
-- `src/SeansPlayground.Core`: constants and core domain concepts.
+- `src/SeansPlayground.Core`: EF Core entities, DbContext, migrations, and domain constants.
 - `src/SeansPlayground.Web`: Vite React frontend with Material UI.
-- `infrastructure/postgres/init.sql`: local database schema and seed data.
+- `infrastructure/postgres/init.sql`: Docker entrypoint no-op; application schema is EF-managed.
 - `infrastructure/keycloak/seans-playground-realm.json`: local Keycloak realm import.
 - `docker-compose.yml`: local Postgres, Keycloak, API, and web stack.
 
@@ -190,16 +190,19 @@ Docker Compose reads these values from `.env` when present:
 - `POSTGRES_USER`
 - `POSTGRES_PASSWORD`
 
-The local schema and seed data live in:
+Application schema and seed data are owned by EF Core migrations in:
 
 ```text
-infrastructure/postgres/init.sql
+src/SeansPlayground.Core/Migrations
 ```
 
-The seed script is idempotent. You can apply it to the running database after editing it:
+The API applies pending migrations on startup. To apply migrations directly:
 
 ```bash
-docker compose exec -T postgres psql -U seans_playground -d seans_playground -f /docker-entrypoint-initdb.d/init.sql
+dotnet ef database update \
+  --project src/SeansPlayground.Core \
+  --startup-project src/SeansPlayground.Api \
+  --context PlaygroundDbContext
 ```
 
 ## pgAdmin Desktop Setup
@@ -269,28 +272,28 @@ docker rm seans-playground-pgadmin
 
 ## EF Core Migrations
 
-The application now has an EF Core application context at `SeansPlayground.Core.Data.PlaygroundDbContext`.
-New database work should be modeled there and shipped as migrations.
+The application data model is owned by `SeansPlayground.Core.Data.PlaygroundDbContext`.
+New database work should be modeled with Core entities/configurations and shipped as migrations.
 
-The NASA dashboard tables are migration-managed in the `nasa` schema. The older background/resume tables still come from `infrastructure/postgres/init.sql`; plan to absorb them into EF with a baseline migration before making major changes to that model.
+Current EF-managed areas:
 
-Recommended path for the full EF rewrite:
-
-1. Add entity classes and configurations for the existing `background` schema without changing table names or columns.
-2. Create a baseline migration that represents the current schema, then mark it applied in environments that already have those tables.
-3. Move raw SQL services to `PlaygroundDbContext` one aggregate at a time.
-4. Keep future schema changes in EF migrations only.
+- `public.playground_events`
+- `background.*` profile, document, social, repository, education, experience, and entitlement tables
+- `nasa.apod_images`
+- `nasa.donki_events`
 
 Useful commands:
 
 ```bash
 dotnet ef migrations add MigrationName \
   --project src/SeansPlayground.Core \
-  --startup-project src/SeansPlayground.Api
+  --startup-project src/SeansPlayground.Api \
+  --context PlaygroundDbContext
 
 dotnet ef database update \
   --project src/SeansPlayground.Core \
-  --startup-project src/SeansPlayground.Api
+  --startup-project src/SeansPlayground.Api \
+  --context PlaygroundDbContext
 ```
 
 The API also applies pending migrations on startup, so Docker-based local development usually only needs:

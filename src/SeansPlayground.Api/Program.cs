@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Npgsql;
 using SeansPlayground.Contracts;
 using SeansPlayground.Core.Data;
 using SeansPlayground.Core.Playground;
@@ -16,7 +15,6 @@ builder.Services.AddOpenApi();
 builder.Services.AddSeansPlaygroundServices();
 builder.Services.AddControllers();
 builder.Services.AddDbContext<PlaygroundDbContext>(options => options.UseNpgsql(connectionString));
-builder.Services.AddSingleton(_ => NpgsqlDataSource.Create(connectionString));
 
 builder.Services.AddCors(options =>
 {
@@ -72,19 +70,15 @@ app.MapGet("/api/dashboard/summary", (IPlaygroundDashboardService dashboardServi
 })
 .WithName("GetDashboardSummary");
 
-app.MapGet("/api/system/status", async (IConfiguration configuration, IWebHostEnvironment environment) =>
+app.MapGet("/api/system/status", async (PlaygroundDbContext dbContext, IConfiguration configuration, IWebHostEnvironment environment) =>
 {
-    var connectionString = configuration.GetConnectionString("Postgres")
-        ?? throw new InvalidOperationException("Missing Postgres connection string.");
-
     var databaseStatus = "Unavailable";
 
     try
     {
-        await using var dataSource = NpgsqlDataSource.Create(connectionString);
-        await using var command = dataSource.CreateCommand("select 1");
-        await command.ExecuteScalarAsync();
-        databaseStatus = "Connected";
+        databaseStatus = await dbContext.Database.CanConnectAsync()
+            ? "Connected"
+            : "Unavailable";
     }
     catch
     {

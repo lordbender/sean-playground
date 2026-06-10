@@ -1,33 +1,82 @@
-using Npgsql;
+using Microsoft.EntityFrameworkCore;
 using SeansPlayground.Contracts.Background;
 using SeansPlayground.Core.Background;
+using SeansPlayground.Core.Data;
 
 namespace SeansPlayground.Services.Background;
 
-public sealed class BackgroundService(NpgsqlDataSource dataSource) : IBackgroundService
+public sealed class BackgroundService(PlaygroundDbContext dbContext) : IBackgroundService
 {
     public async Task<BackgroundResponse?> GetBackgroundAsync(
         IReadOnlyCollection<string> userRoles,
         CancellationToken cancellationToken)
     {
-        var allowedRoles = await GetAllowedRolesAsync(cancellationToken);
+        var allowedRoles = await dbContext.BackgroundSectionEntitlements
+            .AsNoTracking()
+            .Where(item => item.SectionKey == BackgroundConstants.SectionKey)
+            .OrderBy(item => item.RoleName)
+            .Select(item => item.RoleName)
+            .ToArrayAsync(cancellationToken);
 
         if (!allowedRoles.Any(userRoles.Contains))
         {
             return null;
         }
 
-        var profile = await GetProfileAsync(cancellationToken)
+        var profile = await dbContext.BackgroundProfiles
+            .AsNoTracking()
+            .SingleOrDefaultAsync(item => item.Slug == BackgroundConstants.ProfileSlug, cancellationToken)
             ?? throw new InvalidOperationException("Background profile seed data is missing.");
 
-        var document = await GetDocumentAsync(profile.Id, cancellationToken)
+        var document = await dbContext.BackgroundDocuments
+            .AsNoTracking()
+            .Where(item => item.ProfileId == profile.Id)
+            .OrderByDescending(item => item.CreatedAt)
+            .FirstOrDefaultAsync(cancellationToken)
             ?? throw new InvalidOperationException("Background document seed data is missing.");
 
-        var sections = await GetDocumentSectionsAsync(document.Id, cancellationToken);
+        var sections = await dbContext.BackgroundDocumentSections
+            .AsNoTracking()
+            .Where(item => item.DocumentId == document.Id)
+            .OrderBy(item => item.SectionOrder)
+            .Select(item => new BackgroundDocumentSectionDto(item.Heading, item.Body))
+            .ToArrayAsync(cancellationToken);
+
         var experiences = await GetExperiencesAsync(profile.Id, cancellationToken);
-        var education = await GetEducationAsync(profile.Id, cancellationToken);
-        var socialLinks = await GetSocialLinksAsync(profile.Id, cancellationToken);
-        var repositories = await GetRepositoriesAsync(profile.Id, cancellationToken);
+
+        var education = await dbContext.BackgroundEducationItems
+            .AsNoTracking()
+            .Where(item => item.ProfileId == profile.Id)
+            .OrderBy(item => item.SortOrder)
+            .Select(item => new BackgroundEducationDto(
+                item.InstitutionName,
+                item.DegreeName,
+                item.FieldOfStudy,
+                item.Note))
+            .ToArrayAsync(cancellationToken);
+
+        var socialLinks = await dbContext.BackgroundSocialLinks
+            .AsNoTracking()
+            .Where(item => item.ProfileId == profile.Id)
+            .OrderBy(item => item.SortOrder)
+            .Select(item => new BackgroundSocialLinkDto(
+                item.Platform!.Name,
+                item.DisplayText,
+                item.Url,
+                item.IsActive))
+            .ToArrayAsync(cancellationToken);
+
+        var repositories = await dbContext.BackgroundRepositories
+            .AsNoTracking()
+            .Where(item => item.ProfileId == profile.Id)
+            .OrderBy(item => item.SortOrder)
+            .Select(item => new BackgroundRepositoryDto(
+                item.OwnerName,
+                item.RepositoryName,
+                item.Url,
+                item.Description,
+                item.IsFeatured))
+            .ToArrayAsync(cancellationToken);
 
         return new BackgroundResponse(
             BackgroundConstants.SectionKey,
@@ -40,228 +89,51 @@ public sealed class BackgroundService(NpgsqlDataSource dataSource) : IBackground
             repositories);
     }
 
-    private async Task<IReadOnlyCollection<string>> GetAllowedRolesAsync(CancellationToken cancellationToken)
-    {
-        const string sql = """
-            select role_name
-            from background.section_entitlements
-            where section_key = @section_key
-            order by role_name;
-            """;
-
-        var roles = new List<string>();
-        await using var command = dataSource.CreateCommand(sql);
-        command.Parameters.AddWithValue("section_key", BackgroundConstants.SectionKey);
-        await using var reader = await command.ExecuteReaderAsync(cancellationToken);
-
-        while (await reader.ReadAsync(cancellationToken))
-        {
-            roles.Add(reader.GetString(0));
-        }
-
-        return roles;
-    }
-
-    private async Task<ProfileRecord?> GetProfileAsync(CancellationToken cancellationToken)
-    {
-        const string sql = """
-            select id, display_name, headline, location, biography
-            from background.profiles
-            where slug = @slug;
-            """;
-
-        await using var command = dataSource.CreateCommand(sql);
-        command.Parameters.AddWithValue("slug", BackgroundConstants.ProfileSlug);
-        await using var reader = await command.ExecuteReaderAsync(cancellationToken);
-
-        if (!await reader.ReadAsync(cancellationToken))
-        {
-            return null;
-        }
-
-        return new ProfileRecord(
-            reader.GetInt64(0),
-            reader.GetString(1),
-            reader.GetString(2),
-            reader.GetString(3),
-            reader.GetString(4));
-    }
-
-    private async Task<DocumentRecord?> GetDocumentAsync(long profileId, CancellationToken cancellationToken)
-    {
-        const string sql = """
-            select id, title, source_file_name, content_type
-            from background.documents
-            where profile_id = @profile_id
-            order by created_at desc
-            limit 1;
-            """;
-
-        await using var command = dataSource.CreateCommand(sql);
-        command.Parameters.AddWithValue("profile_id", profileId);
-        await using var reader = await command.ExecuteReaderAsync(cancellationToken);
-
-        if (!await reader.ReadAsync(cancellationToken))
-        {
-            return null;
-        }
-
-        return new DocumentRecord(
-            reader.GetInt64(0),
-            reader.GetString(1),
-            reader.GetString(2),
-            reader.GetString(3));
-    }
-
-    private async Task<IReadOnlyCollection<BackgroundDocumentSectionDto>> GetDocumentSectionsAsync(
-        long documentId,
-        CancellationToken cancellationToken)
-    {
-        const string sql = """
-            select heading, body
-            from background.document_sections
-            where document_id = @document_id
-            order by section_order;
-            """;
-
-        var sections = new List<BackgroundDocumentSectionDto>();
-        await using var command = dataSource.CreateCommand(sql);
-        command.Parameters.AddWithValue("document_id", documentId);
-        await using var reader = await command.ExecuteReaderAsync(cancellationToken);
-
-        while (await reader.ReadAsync(cancellationToken))
-        {
-            sections.Add(new BackgroundDocumentSectionDto(reader.GetString(0), reader.GetString(1)));
-        }
-
-        return sections;
-    }
-
     private async Task<IReadOnlyCollection<BackgroundExperienceDto>> GetExperiencesAsync(
         long profileId,
         CancellationToken cancellationToken)
     {
-        const string sql = """
-            select
-                e.role_title,
-                e.organization_name,
-                e.location,
-                e.date_label,
-                e.duration_label,
-                coalesce(array_agg(h.highlight_text order by h.sort_order) filter (where h.id is not null), '{}') as highlights
-            from background.experiences e
-            left join background.experience_highlights h on h.experience_id = e.id
-            where e.profile_id = @profile_id
-            group by e.id
-            order by e.sort_order;
-            """;
+        var experiences = await dbContext.BackgroundExperiences
+            .AsNoTracking()
+            .Where(item => item.ProfileId == profileId)
+            .OrderBy(item => item.SortOrder)
+            .Select(item => new
+            {
+                item.Id,
+                item.RoleTitle,
+                item.OrganizationName,
+                item.Location,
+                item.DateLabel,
+                item.DurationLabel
+            })
+            .ToArrayAsync(cancellationToken);
 
-        var experiences = new List<BackgroundExperienceDto>();
-        await using var command = dataSource.CreateCommand(sql);
-        command.Parameters.AddWithValue("profile_id", profileId);
-        await using var reader = await command.ExecuteReaderAsync(cancellationToken);
+        var experienceIds = experiences.Select(item => item.Id).ToArray();
+        var highlightRows = await dbContext.BackgroundExperienceHighlights
+            .AsNoTracking()
+            .Where(item => experienceIds.Contains(item.ExperienceId))
+            .OrderBy(item => item.SortOrder)
+            .Select(group => new
+            {
+                group.ExperienceId,
+                group.HighlightText
+            })
+            .ToArrayAsync(cancellationToken);
 
-        while (await reader.ReadAsync(cancellationToken))
-        {
-            experiences.Add(new BackgroundExperienceDto(
-                reader.GetString(0),
-                reader.GetString(1),
-                reader.IsDBNull(2) ? null : reader.GetString(2),
-                reader.GetString(3),
-                reader.IsDBNull(4) ? null : reader.GetString(4),
-                reader.GetFieldValue<string[]>(5)));
-        }
+        var highlights = highlightRows
+            .GroupBy(item => item.ExperienceId)
+            .ToDictionary(
+                group => group.Key,
+                group => group.Select(item => item.HighlightText).ToArray());
 
-        return experiences;
+        return experiences
+            .Select(item => new BackgroundExperienceDto(
+                item.RoleTitle,
+                item.OrganizationName,
+                item.Location,
+                item.DateLabel,
+                item.DurationLabel,
+                highlights.GetValueOrDefault(item.Id, [])))
+            .ToArray();
     }
-
-    private async Task<IReadOnlyCollection<BackgroundEducationDto>> GetEducationAsync(
-        long profileId,
-        CancellationToken cancellationToken)
-    {
-        const string sql = """
-            select institution_name, degree_name, field_of_study, note
-            from background.education_items
-            where profile_id = @profile_id
-            order by sort_order;
-            """;
-
-        var education = new List<BackgroundEducationDto>();
-        await using var command = dataSource.CreateCommand(sql);
-        command.Parameters.AddWithValue("profile_id", profileId);
-        await using var reader = await command.ExecuteReaderAsync(cancellationToken);
-
-        while (await reader.ReadAsync(cancellationToken))
-        {
-            education.Add(new BackgroundEducationDto(
-                reader.GetString(0),
-                reader.GetString(1),
-                reader.IsDBNull(2) ? null : reader.GetString(2),
-                reader.IsDBNull(3) ? null : reader.GetString(3)));
-        }
-
-        return education;
-    }
-
-    private async Task<IReadOnlyCollection<BackgroundSocialLinkDto>> GetSocialLinksAsync(
-        long profileId,
-        CancellationToken cancellationToken)
-    {
-        const string sql = """
-            select sp.name, sl.display_text, sl.url, sl.is_active
-            from background.social_links sl
-            join background.social_platforms sp on sp.id = sl.platform_id
-            where sl.profile_id = @profile_id
-            order by sl.sort_order;
-            """;
-
-        var links = new List<BackgroundSocialLinkDto>();
-        await using var command = dataSource.CreateCommand(sql);
-        command.Parameters.AddWithValue("profile_id", profileId);
-        await using var reader = await command.ExecuteReaderAsync(cancellationToken);
-
-        while (await reader.ReadAsync(cancellationToken))
-        {
-            links.Add(new BackgroundSocialLinkDto(
-                reader.GetString(0),
-                reader.GetString(1),
-                reader.GetString(2),
-                reader.GetBoolean(3)));
-        }
-
-        return links;
-    }
-
-    private async Task<IReadOnlyCollection<BackgroundRepositoryDto>> GetRepositoriesAsync(
-        long profileId,
-        CancellationToken cancellationToken)
-    {
-        const string sql = """
-            select owner_name, repository_name, url, description, is_featured
-            from background.repositories
-            where profile_id = @profile_id
-            order by sort_order;
-            """;
-
-        var repositories = new List<BackgroundRepositoryDto>();
-        await using var command = dataSource.CreateCommand(sql);
-        command.Parameters.AddWithValue("profile_id", profileId);
-        await using var reader = await command.ExecuteReaderAsync(cancellationToken);
-
-        while (await reader.ReadAsync(cancellationToken))
-        {
-            repositories.Add(new BackgroundRepositoryDto(
-                reader.GetString(0),
-                reader.GetString(1),
-                reader.GetString(2),
-                reader.GetString(3),
-                reader.GetBoolean(4)));
-        }
-
-        return repositories;
-    }
-
-    private sealed record ProfileRecord(long Id, string DisplayName, string Headline, string Location, string Biography);
-
-    private sealed record DocumentRecord(long Id, string Title, string SourceFileName, string ContentType);
 }

@@ -123,14 +123,25 @@ The app now has an EF Core application context:
 SeansPlayground.Core.Data.PlaygroundDbContext
 ```
 
-The current EF-managed schema is:
+The EF-managed schema is:
 
 ```text
+public.playground_events
+background.profiles
+background.documents
+background.document_sections
+background.experiences
+background.experience_highlights
+background.education_items
+background.social_platforms
+background.social_links
+background.repositories
+background.section_entitlements
 nasa.apod_images
 nasa.donki_events
 ```
 
-Older background/resume tables still exist from the initial Postgres bootstrap script. They should be pulled into EF with a baseline migration before making larger model changes.
+The Docker Postgres init script is intentionally a no-op. Schema creation and seed data are handled through EF migrations, and the API applies pending migrations on startup.
 
 ## Deployment Shape
 
