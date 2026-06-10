@@ -16,6 +16,12 @@ Local .NET 10 API, shared contracts, service layer, core project, Vite React fro
 
 ## Run Locally
 
+Create your local environment file:
+
+```bash
+cp .env.example .env
+```
+
 ```bash
 make up
 ```

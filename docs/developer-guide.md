@@ -27,6 +27,18 @@ This guide covers local development for Sean's Playground: the .NET API, Vite Re
 From the repository root:
 
 ```bash
+cp .env.example .env
+```
+
+Update `.env` with local-only values. The current local development server target is stored as:
+
+```text
+SEANS_PLAYGROUND_LOCAL_DEV_SERVER=your-user@your-dev-host.local
+```
+
+The real `.env` file is ignored by git. Keep `.env.example` clean and commit-safe.
+
+```bash
 make up
 ```
 
@@ -130,6 +142,12 @@ Connection details:
 - Username: `seans_playground`
 - Password: `seans_playground`
 
+Docker Compose reads these values from `.env` when present:
+
+- `POSTGRES_DB`
+- `POSTGRES_USER`
+- `POSTGRES_PASSWORD`
+
 The local schema and seed data live in:
 
 ```text
@@ -225,6 +243,11 @@ Important local settings:
 - The `sean` user has the `Admins` role and realm-management admin access.
 - The web client uses Authorization Code with PKCE.
 - The web client includes an audience mapper for `seans-playground-api`.
+
+Docker Compose reads these Keycloak bootstrap values from `.env` when present:
+
+- `KEYCLOAK_ADMIN_USERNAME`
+- `KEYCLOAK_ADMIN_PASSWORD`
 
 ## Entitlements
 

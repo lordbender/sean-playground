@@ -5,7 +5,8 @@ dist/
 .DS_Store
 *.user
 *.suo
+
+# Local secrets and machine-specific environment files.
 .env
 .env.*
 !.env.example
-

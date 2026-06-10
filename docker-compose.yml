@@ -5,9 +5,9 @@ services:
     image: postgres:16-alpine
     container_name: seans-playground-postgres
     environment:
-      POSTGRES_DB: seans_playground
-      POSTGRES_USER: seans_playground
-      POSTGRES_PASSWORD: seans_playground
+      POSTGRES_DB: ${POSTGRES_DB:-seans_playground}
+      POSTGRES_USER: ${POSTGRES_USER:-seans_playground}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-seans_playground}
     ports:
       - "5432:5432"
     volumes:
@@ -24,8 +24,8 @@ services:
     container_name: seans-playground-keycloak
     command: ["start-dev", "--import-realm"]
     environment:
-      KC_BOOTSTRAP_ADMIN_USERNAME: admin
-      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_ADMIN_USERNAME:-admin}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-admin}
       KC_HTTP_ENABLED: "true"
       KC_HTTP_PORT: 8080
       KC_HOSTNAME_STRICT: "false"
@@ -42,7 +42,7 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: http://+:8080
-      ConnectionStrings__Postgres: Host=postgres;Port=5432;Database=seans_playground;Username=seans_playground;Password=seans_playground
+      ConnectionStrings__Postgres: Host=postgres;Port=5432;Database=${POSTGRES_DB:-seans_playground};Username=${POSTGRES_USER:-seans_playground};Password=${POSTGRES_PASSWORD:-seans_playground}
       Authentication__Authority: http://keycloak:8080/realms/seans-playground
       Authentication__Audience: seans-playground-api
       Authentication__RequireHttpsMetadata: "false"
