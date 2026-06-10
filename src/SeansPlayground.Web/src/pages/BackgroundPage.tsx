@@ -23,10 +23,12 @@ const apiBaseUrl = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:5100";
 
 type BackgroundPageProps = {
   activeSection: AppSection;
+  isNavCollapsed: boolean;
   onNavigate: (section: AppSection) => void;
+  onToggleNavigation: () => void;
 };
 
-export function BackgroundPage({ activeSection, onNavigate }: BackgroundPageProps) {
+export function BackgroundPage({ activeSection, isNavCollapsed, onNavigate, onToggleNavigation }: BackgroundPageProps) {
   const { user } = useAuth();
   const [background, setBackground] = useState<BackgroundSummary | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -53,7 +55,12 @@ export function BackgroundPage({ activeSection, onNavigate }: BackgroundPageProp
   }, [user?.access_token]);
 
   return (
-    <DashboardLayout activeSection={activeSection} onNavigate={onNavigate}>
+    <DashboardLayout
+      activeSection={activeSection}
+      isNavCollapsed={isNavCollapsed}
+      onNavigate={onNavigate}
+      onToggleNavigation={onToggleNavigation}
+    >
       {background ? (
         <Box className="backgroundPage">
           <Box className="backgroundHero">

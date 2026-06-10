@@ -14,10 +14,12 @@ const apiBaseUrl = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:5100";
 
 type DashboardPageProps = {
   activeSection: AppSection;
+  isNavCollapsed: boolean;
   onNavigate: (section: AppSection) => void;
+  onToggleNavigation: () => void;
 };
 
-export function DashboardPage({ activeSection, onNavigate }: DashboardPageProps) {
+export function DashboardPage({ activeSection, isNavCollapsed, onNavigate, onToggleNavigation }: DashboardPageProps) {
   const [dashboard, setDashboard] = useState<NasaDashboard | null>(null);
   const [status, setStatus] = useState<SystemStatus | null>(null);
 
@@ -32,7 +34,12 @@ export function DashboardPage({ activeSection, onNavigate }: DashboardPageProps)
   }, []);
 
   return (
-    <DashboardLayout activeSection={activeSection} onNavigate={onNavigate}>
+    <DashboardLayout
+      activeSection={activeSection}
+      isNavCollapsed={isNavCollapsed}
+      onNavigate={onNavigate}
+      onToggleNavigation={onToggleNavigation}
+    >
       <Box className="dashboardHeader">
         <Box>
           <Typography variant="h4" fontWeight={800}>

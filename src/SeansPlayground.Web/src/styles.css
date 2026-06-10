@@ -59,6 +59,10 @@ body {
   grid-template-rows: 64px minmax(0, 1fr);
 }
 
+.appShell.navCollapsed {
+  grid-template-columns: 88px minmax(0, 1fr);
+}
+
 .topBar {
   grid-column: 1 / -1;
   display: flex;
@@ -115,10 +119,19 @@ body {
     repeating-linear-gradient(135deg, rgba(242, 193, 78, 0.2) 0 8px, rgba(91, 26, 142, 0.08) 8px 16px);
   border-right: 1px solid rgba(91, 26, 142, 0.12);
   box-shadow: 8px 0 28px rgba(53, 16, 79, 0.1);
+  transition: padding 180ms ease;
+}
+
+.appShell.navCollapsed .sideRail {
+  padding: 28px 8px;
 }
 
 .navSection {
   margin-bottom: 26px;
+}
+
+.appShell.navCollapsed .navSection {
+  margin-bottom: 14px;
 }
 
 .navEyebrow {
@@ -135,11 +148,34 @@ body {
   font-size: 13px !important;
 }
 
+.appShell.navCollapsed .navEyebrow,
+.appShell.navCollapsed .navCaption {
+  height: 0;
+  opacity: 0;
+  overflow: hidden;
+  padding: 0;
+}
+
 .navItem {
   justify-content: flex-start !important;
   min-height: 56px !important;
   padding: 0 16px !important;
   color: var(--sp-ink) !important;
+  white-space: nowrap;
+}
+
+.appShell.navCollapsed .navItem {
+  justify-content: center !important;
+  min-width: 56px !important;
+  padding: 0 !important;
+}
+
+.appShell.navCollapsed .navItem .MuiButton-startIcon {
+  margin: 0 !important;
+}
+
+.appShell.navCollapsed .navItemLabel {
+  display: none;
 }
 
 .navItem.active {
@@ -1195,6 +1231,11 @@ body {
     grid-template-rows: 64px auto minmax(0, 1fr);
   }
 
+  .appShell.navCollapsed {
+    grid-template-columns: 1fr;
+    grid-template-rows: 64px minmax(0, 1fr);
+  }
+
   .topBar {
     padding: 0 14px;
     gap: 8px;
@@ -1220,9 +1261,17 @@ body {
     padding: 12px;
   }
 
+  .appShell.navCollapsed .sideRail {
+    display: none;
+  }
+
   .navSection {
     min-width: 200px;
     margin-bottom: 0;
+  }
+
+  .appShell.navCollapsed .navSection {
+    min-width: 0;
   }
 
   .dashboardSurface {

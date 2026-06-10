@@ -10,6 +10,7 @@ export type AppSection = "dashboard" | "background" | "documentation";
 export function App() {
   const { completeSignIn, isAuthenticated } = useAuth();
   const [activeSection, setActiveSection] = useState<AppSection>("dashboard");
+  const [isNavCollapsed, setIsNavCollapsed] = useState(false);
 
   useEffect(() => {
     if (window.location.search.includes("code=") && window.location.search.includes("state=")) {
@@ -22,12 +23,33 @@ export function App() {
   }
 
   if (activeSection === "background") {
-    return <BackgroundPage activeSection={activeSection} onNavigate={setActiveSection} />;
+    return (
+      <BackgroundPage
+        activeSection={activeSection}
+        isNavCollapsed={isNavCollapsed}
+        onNavigate={setActiveSection}
+        onToggleNavigation={() => setIsNavCollapsed((current) => !current)}
+      />
+    );
   }
 
   if (activeSection === "documentation") {
-    return <DocumentationPage activeSection={activeSection} onNavigate={setActiveSection} />;
+    return (
+      <DocumentationPage
+        activeSection={activeSection}
+        isNavCollapsed={isNavCollapsed}
+        onNavigate={setActiveSection}
+        onToggleNavigation={() => setIsNavCollapsed((current) => !current)}
+      />
+    );
   }
 
-  return <DashboardPage activeSection={activeSection} onNavigate={setActiveSection} />;
+  return (
+    <DashboardPage
+      activeSection={activeSection}
+      isNavCollapsed={isNavCollapsed}
+      onNavigate={setActiveSection}
+      onToggleNavigation={() => setIsNavCollapsed((current) => !current)}
+    />
+  );
 }

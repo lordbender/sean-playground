@@ -52,10 +52,18 @@ const sections: NavSection[] = [
 
 type DashboardLayoutProps = PropsWithChildren<{
   activeSection: AppSection;
+  isNavCollapsed: boolean;
   onNavigate: (section: AppSection) => void;
+  onToggleNavigation: () => void;
 }>;
 
-export function DashboardLayout({ activeSection, children, onNavigate }: DashboardLayoutProps) {
+export function DashboardLayout({
+  activeSection,
+  children,
+  isNavCollapsed,
+  onNavigate,
+  onToggleNavigation
+}: DashboardLayoutProps) {
   const { isAdmin, signOut, user } = useAuth();
   const [profileAnchor, setProfileAnchor] = useState<HTMLElement | null>(null);
   const profileMenuOpen = Boolean(profileAnchor);
@@ -79,11 +87,17 @@ export function DashboardLayout({ activeSection, children, onNavigate }: Dashboa
   };
 
   return (
-    <Box className="appShell">
+    <Box className={isNavCollapsed ? "appShell navCollapsed" : "appShell"}>
       <Box component="header" className="topBar">
         <BrandMark />
         <Tooltip title="Toggle navigation">
-          <IconButton className="topIconButton" aria-label="Toggle navigation">
+          <IconButton
+            className="topIconButton"
+            aria-label="Toggle navigation"
+            aria-controls="primary-navigation"
+            aria-expanded={!isNavCollapsed}
+            onClick={onToggleNavigation}
+          >
             <MenuIcon />
           </IconButton>
         </Tooltip>
@@ -147,7 +161,7 @@ export function DashboardLayout({ activeSection, children, onNavigate }: Dashboa
         </Menu>
       </Box>
 
-      <Box component="aside" className="sideRail">
+      <Box component="aside" className="sideRail" id="primary-navigation">
         {sections.map((section) => (
           <Box key={section.eyebrow} className="navSection">
             <Typography className="navEyebrow">{section.eyebrow}</Typography>
@@ -157,15 +171,16 @@ export function DashboardLayout({ activeSection, children, onNavigate }: Dashboa
               const isActive = item.section === activeSection;
 
               return (
-                <Button
-                  key={item.label}
-                  className={isActive ? "navItem active" : "navItem"}
-                  startIcon={<Icon />}
-                  onClick={item.section ? () => onNavigate(item.section!) : undefined}
-                  fullWidth
-                >
-                  {item.label}
-                </Button>
+                <Tooltip key={item.label} title={isNavCollapsed ? item.label : ""} placement="right">
+                  <Button
+                    className={isActive ? "navItem active" : "navItem"}
+                    startIcon={<Icon />}
+                    onClick={item.section ? () => onNavigate(item.section!) : undefined}
+                    fullWidth
+                  >
+                    <span className="navItemLabel">{item.label}</span>
+                  </Button>
+                </Tooltip>
               );
             })}
           </Box>

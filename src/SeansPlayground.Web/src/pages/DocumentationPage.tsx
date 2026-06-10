@@ -14,10 +14,12 @@ import { documents } from "virtual:documentation";
 
 type DocumentationPageProps = {
   activeSection: AppSection;
+  isNavCollapsed: boolean;
   onNavigate: (section: AppSection) => void;
+  onToggleNavigation: () => void;
 };
 
-export function DocumentationPage({ activeSection, onNavigate }: DocumentationPageProps) {
+export function DocumentationPage({ activeSection, isNavCollapsed, onNavigate, onToggleNavigation }: DocumentationPageProps) {
   const [activeDocumentId, setActiveDocumentId] = useState(documents[0]?.id);
   const activeDocument = useMemo(
     () => documents.find((document) => document.id === activeDocumentId) ?? documents[0],
@@ -26,14 +28,24 @@ export function DocumentationPage({ activeSection, onNavigate }: DocumentationPa
 
   if (!activeDocument) {
     return (
-      <DashboardLayout activeSection={activeSection} onNavigate={onNavigate}>
+      <DashboardLayout
+        activeSection={activeSection}
+        isNavCollapsed={isNavCollapsed}
+        onNavigate={onNavigate}
+        onToggleNavigation={onToggleNavigation}
+      >
         <Box className="loadingPanel">No documentation is available.</Box>
       </DashboardLayout>
     );
   }
 
   return (
-    <DashboardLayout activeSection={activeSection} onNavigate={onNavigate}>
+    <DashboardLayout
+      activeSection={activeSection}
+      isNavCollapsed={isNavCollapsed}
+      onNavigate={onNavigate}
+      onToggleNavigation={onToggleNavigation}
+    >
       <Box className="documentationPage">
         <Box className="documentationHero">
           <Box>
