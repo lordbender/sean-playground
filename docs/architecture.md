@@ -148,7 +148,7 @@ The Docker Postgres init script is intentionally a no-op. Schema creation and se
 Local development uses:
 
 ```bash
-docker compose up --build -d
+make up
 ```
 
 Home-server deployment uses:

@@ -337,7 +337,7 @@ dotnet ef database update \
 The API also applies pending migrations on startup, so Docker-based local development usually only needs:
 
 ```bash
-docker compose up --build -d
+make up
 ```
 
 ## NASA Data
@@ -400,13 +400,13 @@ To change who can see the section later, update `background.section_entitlements
 If a service is stale after changing Docker, rebuild:
 
 ```bash
-docker compose up --build -d
+make up
 ```
 
 If Postgres already has an old volume and you want a completely fresh database, stop the stack and remove the named volume:
 
 ```bash
-docker compose down
+make down
 docker volume rm seans-playground_postgres-data
 make up
 ```
