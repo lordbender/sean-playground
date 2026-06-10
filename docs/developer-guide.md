@@ -55,6 +55,18 @@ Run a smoke check:
 make smoke
 ```
 
+Run the authenticated browser E2E check:
+
+```bash
+make e2e
+```
+
+The E2E test uses Playwright to sign in through the real Keycloak browser flow and verify the protected `Sean's Background` page. It defaults to the seeded `user` account. Override the test identity when needed:
+
+```bash
+E2E_USERNAME=friend E2E_PASSWORD=playground make e2e
+```
+
 ## Local Credentials
 
 Keycloak admin console:
@@ -80,6 +92,18 @@ make build
 ```
 
 Builds the .NET solution and the Vite frontend.
+
+```bash
+make e2e
+```
+
+Starts the local Docker stack and runs the Playwright E2E suite.
+
+```bash
+make e2e-headed
+```
+
+Runs the same E2E suite with a visible browser.
 
 ```bash
 make install
