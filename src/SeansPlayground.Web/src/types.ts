@@ -51,3 +51,63 @@ export type SystemStatus = {
   timestamp: string;
 };
 
+export type BackgroundDocumentSection = {
+  heading: string;
+  body: string;
+};
+
+export type BackgroundDocument = {
+  title: string;
+  sourceFileName: string;
+  contentType: string;
+  sections: BackgroundDocumentSection[];
+};
+
+export type BackgroundExperience = {
+  roleTitle: string;
+  organizationName: string;
+  location?: string;
+  dateLabel: string;
+  durationLabel?: string;
+  highlights: string[];
+};
+
+export type BackgroundEducation = {
+  institutionName: string;
+  degreeName: string;
+  fieldOfStudy?: string;
+  note?: string;
+};
+
+export type BackgroundSocialLink = {
+  platformName: string;
+  displayText: string;
+  url: string;
+  isActive: boolean;
+};
+
+export type BackgroundRepository = {
+  ownerName: string;
+  repositoryName: string;
+  url: string;
+  description: string;
+  isFeatured: boolean;
+};
+
+export type BackgroundProfile = {
+  displayName: string;
+  headline: string;
+  location: string;
+  biography: string;
+};
+
+export type BackgroundSummary = {
+  sectionKey: string;
+  allowedRoles: string[];
+  profile: BackgroundProfile;
+  document: BackgroundDocument;
+  experiences: BackgroundExperience[];
+  education: BackgroundEducation[];
+  socialLinks: BackgroundSocialLink[];
+  repositories: BackgroundRepository[];
+};

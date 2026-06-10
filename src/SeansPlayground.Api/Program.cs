@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using Npgsql;
 using SeansPlayground.Contracts;
 using SeansPlayground.Core.Playground;
@@ -9,6 +10,14 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOpenApi();
 builder.Services.AddSeansPlaygroundServices();
+builder.Services.AddControllers();
+builder.Services.AddSingleton(_ =>
+{
+    var connectionString = builder.Configuration.GetConnectionString("Postgres")
+        ?? throw new InvalidOperationException("Missing Postgres connection string.");
+
+    return NpgsqlDataSource.Create(connectionString);
+});
 
 builder.Services.AddCors(options =>
 {
@@ -30,6 +39,10 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         options.Authority = builder.Configuration["Authentication:Authority"];
         options.Audience = builder.Configuration["Authentication:Audience"];
         options.RequireHttpsMetadata = builder.Configuration.GetValue("Authentication:RequireHttpsMetadata", false);
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidIssuers = builder.Configuration.GetSection("Authentication:ValidIssuers").Get<string[]>()
+        };
     });
 
 builder.Services.AddAuthorization();
@@ -44,6 +57,7 @@ if (app.Environment.IsDevelopment())
 app.UseCors("Frontend");
 app.UseAuthentication();
 app.UseAuthorization();
+app.MapControllers();
 
 app.MapGet("/health", () => Results.Ok(new { status = "ok", application = PlaygroundConstants.ApplicationName }));
 

@@ -6,11 +6,17 @@ import { MetricSummaryCard } from "../components/MetricSummaryCard";
 import { RevenueCard } from "../components/RevenueCard";
 import { SalesTrendCard } from "../components/SalesTrendCard";
 import { TrafficSourcesCard } from "../components/TrafficSourcesCard";
+import { AppSection } from "../App";
 import { DashboardSummary, SystemStatus } from "../types";
 
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:5100";
 
-export function DashboardPage() {
+type DashboardPageProps = {
+  activeSection: AppSection;
+  onNavigate: (section: AppSection) => void;
+};
+
+export function DashboardPage({ activeSection, onNavigate }: DashboardPageProps) {
   const [summary, setSummary] = useState<DashboardSummary | null>(null);
   const [status, setStatus] = useState<SystemStatus | null>(null);
 
@@ -25,7 +31,7 @@ export function DashboardPage() {
   }, []);
 
   return (
-    <DashboardLayout>
+    <DashboardLayout activeSection={activeSection} onNavigate={onNavigate}>
       <Box className="dashboardHeader">
         <Box>
           <Typography variant="h4" fontWeight={800}>

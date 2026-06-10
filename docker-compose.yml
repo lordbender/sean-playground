@@ -46,6 +46,8 @@ services:
       Authentication__Authority: http://keycloak:8080/realms/seans-playground
       Authentication__Audience: seans-playground-api
       Authentication__RequireHttpsMetadata: "false"
+      Authentication__ValidIssuers__0: http://localhost:8080/realms/seans-playground
+      Authentication__ValidIssuers__1: http://keycloak:8080/realms/seans-playground
       Cors__AllowedOrigins__0: http://localhost:3000
       Cors__AllowedOrigins__1: http://127.0.0.1:3000
     ports:

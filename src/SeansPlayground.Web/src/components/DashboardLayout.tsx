@@ -11,6 +11,7 @@ import PaletteOutlinedIcon from "@mui/icons-material/PaletteOutlined";
 import SearchIcon from "@mui/icons-material/Search";
 import SecurityOutlinedIcon from "@mui/icons-material/SecurityOutlined";
 import TextFieldsOutlinedIcon from "@mui/icons-material/TextFieldsOutlined";
+import WorkHistoryOutlinedIcon from "@mui/icons-material/WorkHistoryOutlined";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
@@ -23,6 +24,7 @@ import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 import { SvgIconComponent } from "@mui/icons-material";
 import { MouseEvent, PropsWithChildren, useState } from "react";
+import { AppSection } from "../App";
 import { useAuth } from "../auth/AuthProvider";
 import { keycloakAdminUrl } from "../auth/authConfig";
 import { BrandMark } from "./BrandMark";
@@ -30,7 +32,7 @@ import { BrandMark } from "./BrandMark";
 type NavItem = {
   label: string;
   icon: SvgIconComponent;
-  active?: boolean;
+  section?: AppSection;
   hasMenu?: boolean;
 };
 
@@ -44,7 +46,10 @@ const sections: NavSection[] = [
   {
     eyebrow: "Sean's Playground",
     caption: "Dashboard",
-    items: [{ label: "Dashboard", icon: DashboardOutlinedIcon, active: true }]
+    items: [
+      { label: "Dashboard", icon: DashboardOutlinedIcon, section: "dashboard" },
+      { label: "Sean's Background", icon: WorkHistoryOutlinedIcon, section: "background" }
+    ]
   },
   {
     eyebrow: "Pages",
@@ -67,7 +72,12 @@ const sections: NavSection[] = [
   }
 ];
 
-export function DashboardLayout({ children }: PropsWithChildren) {
+type DashboardLayoutProps = PropsWithChildren<{
+  activeSection: AppSection;
+  onNavigate: (section: AppSection) => void;
+}>;
+
+export function DashboardLayout({ activeSection, children, onNavigate }: DashboardLayoutProps) {
   const { isAdmin, signOut, user } = useAuth();
   const [profileAnchor, setProfileAnchor] = useState<HTMLElement | null>(null);
   const profileMenuOpen = Boolean(profileAnchor);
@@ -166,13 +176,15 @@ export function DashboardLayout({ children }: PropsWithChildren) {
             {section.caption ? <Typography className="navCaption">{section.caption}</Typography> : null}
             {section.items.map((item) => {
               const Icon = item.icon;
+              const isActive = item.section === activeSection;
 
               return (
                 <Button
                   key={item.label}
-                  className={item.active ? "navItem active" : "navItem"}
+                  className={isActive ? "navItem active" : "navItem"}
                   startIcon={<Icon />}
                   endIcon={item.hasMenu ? <KeyboardArrowDownOutlinedIcon /> : undefined}
+                  onClick={item.section ? () => onNavigate(item.section!) : undefined}
                   fullWidth
                 >
                   {item.label}
