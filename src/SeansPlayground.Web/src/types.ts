@@ -43,6 +43,48 @@ export type DashboardSummary = {
   marketSignals: MarketSignal[];
 };
 
+export type NasaApod = {
+  date: string;
+  title: string;
+  explanation: string;
+  copyright?: string;
+  mediaType: string;
+  sourceUrl: string;
+  hdUrl?: string;
+  imageUrl?: string;
+  fetchedAt: string;
+};
+
+export type NasaDailyCount = {
+  date: string;
+  count: number;
+};
+
+export type NasaDonkiEvent = {
+  eventType: string;
+  externalId: string;
+  occurredAt?: string;
+  eventDate: string;
+};
+
+export type NasaDonkiSeries = {
+  eventType: string;
+  displayName: string;
+  accent: string;
+  totalCount: number;
+  latestOccurredAt?: string;
+  dailyCounts: NasaDailyCount[];
+  recentEvents: NasaDonkiEvent[];
+};
+
+export type NasaDashboard = {
+  latestApod?: NasaApod;
+  donkiSeries: NasaDonkiSeries[];
+  windowStart: string;
+  windowEnd: string;
+  generatedAt: string;
+};
+
 export type SystemStatus = {
   application: string;
   environment: string;

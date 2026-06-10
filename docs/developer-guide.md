@@ -267,6 +267,49 @@ docker stop seans-playground-pgadmin
 docker rm seans-playground-pgadmin
 ```
 
+## EF Core Migrations
+
+The application now has an EF Core application context at `SeansPlayground.Core.Data.PlaygroundDbContext`.
+New database work should be modeled there and shipped as migrations.
+
+The NASA dashboard tables are migration-managed in the `nasa` schema. The older background/resume tables still come from `infrastructure/postgres/init.sql`; plan to absorb them into EF with a baseline migration before making major changes to that model.
+
+Recommended path for the full EF rewrite:
+
+1. Add entity classes and configurations for the existing `background` schema without changing table names or columns.
+2. Create a baseline migration that represents the current schema, then mark it applied in environments that already have those tables.
+3. Move raw SQL services to `PlaygroundDbContext` one aggregate at a time.
+4. Keep future schema changes in EF migrations only.
+
+Useful commands:
+
+```bash
+dotnet ef migrations add MigrationName \
+  --project src/SeansPlayground.Core \
+  --startup-project src/SeansPlayground.Api
+
+dotnet ef database update \
+  --project src/SeansPlayground.Core \
+  --startup-project src/SeansPlayground.Api
+```
+
+The API also applies pending migrations on startup, so Docker-based local development usually only needs:
+
+```bash
+docker compose up --build -d
+```
+
+## NASA Data
+
+The dashboard uses NASA APOD and DONKI APIs through api.data.gov-style API keys. Put the local key in ignored `.env`:
+
+```bash
+DATA_GOV_API_KEY=your-data-gov-key
+NASA_API_KEY=your-nasa-key
+```
+
+Docker maps those values into the API as `DataGov__ApiKey` and `Nasa__ApiKey`. The NASA-specific key takes precedence when both are set.
+
 ## Keycloak
 
 The local realm import lives in:

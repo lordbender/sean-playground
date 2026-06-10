@@ -427,6 +427,268 @@ body {
   margin-bottom: 10px;
 }
 
+.nasaDashboard {
+  display: grid;
+  gap: 24px;
+}
+
+.apodCard {
+  display: grid;
+  grid-template-columns: minmax(320px, 1.05fr) minmax(300px, 0.95fr);
+  min-height: 430px;
+  overflow: hidden;
+  border: 1px solid rgba(242, 193, 78, 0.56);
+  box-shadow: var(--sp-stage-shadow);
+}
+
+.apodMedia {
+  min-height: 430px;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(242, 193, 78, 0.44), transparent 24%),
+    linear-gradient(135deg, var(--sp-purple-dark), var(--sp-purple) 46%, var(--sp-green));
+}
+
+.apodMedia img {
+  width: 100%;
+  height: 100%;
+  min-height: 430px;
+  display: block;
+  object-fit: cover;
+}
+
+.apodPlaceholder {
+  width: 100%;
+  height: 100%;
+  min-height: 430px;
+  display: grid;
+  place-items: center;
+  color: #fff8e8;
+  font-size: 22px;
+  font-weight: 900;
+}
+
+.apodContent {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 20px;
+  padding: clamp(26px, 4vw, 42px) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 253, 247, 0.98), rgba(255, 248, 232, 0.96)),
+    repeating-linear-gradient(135deg, rgba(91, 26, 142, 0.07) 0 8px, transparent 8px 16px);
+}
+
+.spaceChip {
+  color: var(--sp-ink) !important;
+  background: linear-gradient(135deg, rgba(242, 193, 78, 0.5), rgba(255, 248, 232, 0.94)) !important;
+  border: 1px solid rgba(242, 193, 78, 0.8) !important;
+  font-weight: 900 !important;
+}
+
+.spaceChip.secondary {
+  color: #fff8e8 !important;
+  background: linear-gradient(135deg, var(--sp-purple), var(--sp-green)) !important;
+}
+
+.apodExplanation {
+  color: var(--mui-palette-text-secondary);
+  line-height: 1.7 !important;
+}
+
+.nasaAnalyticsGrid {
+  display: grid;
+  grid-template-columns: minmax(420px, 1.45fr) minmax(320px, 0.75fr);
+  gap: 24px;
+  align-items: stretch;
+}
+
+.nasaChartCard {
+  min-height: 360px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid rgba(242, 193, 78, 0.48);
+  background:
+    linear-gradient(180deg, rgba(255, 253, 247, 0.99), rgba(255, 248, 232, 0.96)),
+    repeating-linear-gradient(135deg, rgba(91, 26, 142, 0.06) 0 8px, transparent 8px 16px);
+}
+
+.chartHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 18px;
+  padding: 22px 24px 18px;
+  border-bottom: 1px solid rgba(91, 26, 142, 0.12);
+  background: linear-gradient(135deg, rgba(242, 193, 78, 0.22), rgba(91, 26, 142, 0.08));
+}
+
+.trendChartWrap {
+  min-height: 240px;
+  padding: 14px 18px 0;
+}
+
+.trendChart {
+  width: 100%;
+  height: 240px;
+  display: block;
+}
+
+.chartGridLine {
+  stroke: rgba(91, 26, 142, 0.14);
+  stroke-width: 1;
+}
+
+.chartAxisText {
+  fill: rgba(53, 16, 79, 0.68);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.chartLegend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 18px;
+  padding: 0 24px 22px;
+}
+
+.chartLegend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--sp-ink);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.chartLegend i {
+  width: 20px;
+  height: 5px;
+  display: inline-block;
+  border-radius: 99px;
+}
+
+.distributionCard {
+  min-height: 360px;
+}
+
+.donkiTotal.compact {
+  min-width: auto;
+  font-size: 34px;
+  color: var(--sp-purple);
+}
+
+.distributionBars {
+  display: grid;
+  gap: 18px;
+  padding: 24px;
+}
+
+.distributionRow {
+  display: grid;
+  grid-template-columns: minmax(120px, 1fr) minmax(110px, 1.4fr) 42px;
+  align-items: center;
+  gap: 14px;
+}
+
+.distributionLabel {
+  min-width: 0;
+}
+
+.distributionTrack {
+  height: 13px;
+  overflow: hidden;
+  border-radius: 99px;
+  background: rgba(91, 26, 142, 0.13);
+  box-shadow: inset 0 0 0 1px rgba(91, 26, 142, 0.08);
+}
+
+.distributionTrack span {
+  height: 100%;
+  display: block;
+  border-radius: inherit;
+}
+
+.distributionValue {
+  text-align: right;
+  font-size: 20px !important;
+  font-weight: 900 !important;
+  color: var(--sp-purple);
+}
+
+.donkiEmptyNote {
+  margin: auto 24px 24px !important;
+  padding: 14px;
+  border-radius: 8px;
+  color: var(--mui-palette-text-secondary);
+  background: rgba(242, 193, 78, 0.16);
+  font-weight: 700 !important;
+  line-height: 1.55 !important;
+}
+
+.donkiGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(220px, 1fr));
+  gap: 24px;
+}
+
+.donkiCard {
+  min-height: 390px;
+  overflow: hidden;
+}
+
+.donkiCardHeader {
+  min-height: 106px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px;
+  border-top: 5px solid;
+  background:
+    linear-gradient(90deg, rgba(242, 193, 78, 0.3) 0 1px, transparent 1px 18px),
+    linear-gradient(135deg, rgba(255, 253, 247, 0.98), rgba(255, 248, 232, 0.96));
+}
+
+.donkiTotal {
+  min-width: 58px;
+  text-align: right;
+  font-size: 38px;
+  font-weight: 900;
+}
+
+.donkiCardBody {
+  display: grid;
+  gap: 18px;
+}
+
+.donkiSparkline {
+  height: 96px;
+  display: flex;
+  align-items: end;
+  gap: 4px;
+  padding: 12px;
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(91, 26, 142, 0.08), rgba(242, 193, 78, 0.14)),
+    #fffdf7;
+}
+
+.donkiSparkline span {
+  flex: 1;
+  min-width: 3px;
+  border-radius: 99px 99px 2px 2px;
+}
+
+.donkiEventRow {
+  display: grid;
+  gap: 3px;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(91, 26, 142, 0.12);
+  background: rgba(255, 255, 255, 0.58);
+}
+
 .loginPage {
   min-height: 100vh;
   display: grid;
@@ -915,9 +1177,15 @@ body {
 
   .metricGrid,
   .panelGrid,
+  .donkiGrid,
+  .nasaAnalyticsGrid,
   .backgroundGrid,
   .documentationShell {
     grid-template-columns: repeat(2, minmax(240px, 1fr));
+  }
+
+  .apodCard {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -967,6 +1235,8 @@ body {
 
   .metricGrid,
   .panelGrid,
+  .donkiGrid,
+  .nasaAnalyticsGrid,
   .backgroundGrid,
   .educationGrid,
   .documentationShell,
@@ -984,6 +1254,23 @@ body {
 
   .documentationNav {
     position: static;
+  }
+
+  .chartHeader,
+  .distributionRow {
+    grid-template-columns: 1fr;
+  }
+
+  .chartHeader {
+    flex-direction: column;
+  }
+
+  .distributionRow {
+    align-items: stretch;
+  }
+
+  .distributionValue {
+    text-align: left;
   }
 
   .repoItem {

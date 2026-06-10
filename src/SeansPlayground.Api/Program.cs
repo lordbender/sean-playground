@@ -1,23 +1,22 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Npgsql;
 using SeansPlayground.Contracts;
+using SeansPlayground.Core.Data;
 using SeansPlayground.Core.Playground;
 using SeansPlayground.Services;
 using SeansPlayground.Services.Dashboard;
 
 var builder = WebApplication.CreateBuilder(args);
+var connectionString = builder.Configuration.GetConnectionString("Postgres")
+    ?? throw new InvalidOperationException("Missing Postgres connection string.");
 
 builder.Services.AddOpenApi();
 builder.Services.AddSeansPlaygroundServices();
 builder.Services.AddControllers();
-builder.Services.AddSingleton(_ =>
-{
-    var connectionString = builder.Configuration.GetConnectionString("Postgres")
-        ?? throw new InvalidOperationException("Missing Postgres connection string.");
-
-    return NpgsqlDataSource.Create(connectionString);
-});
+builder.Services.AddDbContext<PlaygroundDbContext>(options => options.UseNpgsql(connectionString));
+builder.Services.AddSingleton(_ => NpgsqlDataSource.Create(connectionString));
 
 builder.Services.AddCors(options =>
 {
@@ -48,6 +47,12 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddAuthorization();
 
 var app = builder.Build();
+
+await using (var scope = app.Services.CreateAsyncScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<PlaygroundDbContext>();
+    await dbContext.Database.MigrateAsync();
+}
 
 if (app.Environment.IsDevelopment())
 {

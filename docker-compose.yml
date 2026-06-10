@@ -52,6 +52,9 @@ services:
       KeycloakAdmin__Realm: seans-playground
       KeycloakAdmin__Username: ${KEYCLOAK_ADMIN_USERNAME:-admin}
       KeycloakAdmin__Password: ${KEYCLOAK_ADMIN_PASSWORD:-admin}
+      Nasa__BaseUrl: https://api.nasa.gov
+      Nasa__ApiKey: ${NASA_API_KEY:-}
+      DataGov__ApiKey: ${DATA_GOV_API_KEY:-}
       Cors__AllowedOrigins__0: http://localhost:3000
       Cors__AllowedOrigins__1: http://127.0.0.1:3000
     ports:
