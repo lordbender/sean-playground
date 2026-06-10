@@ -2,12 +2,13 @@ SHELL := /bin/sh
 
 SOLUTION := SeansPlayground.slnx
 WEB_DIR := src/SeansPlayground.Web
+DEPLOY_SACRATES_CAVE_SCRIPT := scripts/deploy-sacrates-cave.sh
 API_HEALTH_URL := http://localhost:5100/health
 API_STATUS_URL := http://localhost:5100/api/system/status
 WEB_URL := http://localhost:3000/
 KEYCLOAK_URL := http://localhost:8080/realms/seans-playground/.well-known/openid-configuration
 
-.PHONY: help install build build-api build-web up down restart ps logs logs-api logs-web logs-keycloak logs-postgres smoke clean
+.PHONY: help install build build-api build-web up down restart ps logs logs-api logs-web logs-keycloak logs-postgres smoke deploy-sacrates-cave clean
 
 help:
 	@printf "%s\n" "Sean's Playground targets:"
@@ -21,6 +22,8 @@ help:
 	@printf "%s\n" "  make ps             Show Docker service status"
 	@printf "%s\n" "  make logs           Follow all Docker logs"
 	@printf "%s\n" "  make smoke          Check web, API, database status, and Keycloak"
+	@printf "%s\n" "  make deploy-sacrates-cave"
+	@printf "%s\n" "                       Redeploy the home server stack at sean.vertical-stack.com"
 	@printf "%s\n" "  make clean          Remove local build output"
 
 install:
@@ -69,7 +72,9 @@ smoke:
 	curl -sS $(KEYCLOAK_URL) >/dev/null
 	@printf "%s\n" "Smoke checks passed."
 
+deploy-sacrates-cave:
+	$(DEPLOY_SACRATES_CAVE_SCRIPT)
+
 clean:
 	dotnet clean $(SOLUTION)
 	rm -rf $(WEB_DIR)/dist
-

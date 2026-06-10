@@ -40,10 +40,12 @@
       "rootUrl": "http://localhost:3000",
       "baseUrl": "http://localhost:3000",
       "redirectUris": [
-        "http://localhost:3000/*"
+        "http://localhost:3000/*",
+        "https://sean.vertical-stack.com/*"
       ],
       "webOrigins": [
-        "http://localhost:3000"
+        "http://localhost:3000",
+        "https://sean.vertical-stack.com"
       ],
       "protocolMappers": [
         {

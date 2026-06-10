@@ -105,6 +105,48 @@ make down
 
 Stops the local stack.
 
+## Home Server Deployment
+
+The home-prod style deployment for `https://sean.vertical-stack.com` uses:
+
+```text
+docker-compose.home.yml
+```
+
+That compose file builds the API and web images on the server, runs app Postgres and project Keycloak, and attaches web, API, and Keycloak to the existing WAF network:
+
+```text
+home-coraza-waf_waf_private
+```
+
+The WAF routes `sean.vertical-stack.com` as:
+
+- `/realms/*`, `/resources/*`, and `/admin/*` to Keycloak.
+- `/api/*` and `/health` to the ASP.NET Core API.
+- Everything else to the React/nginx web container.
+
+The deployed frontend is built with:
+
+- API base URL: `https://sean.vertical-stack.com`
+- Keycloak realm: `https://sean.vertical-stack.com/realms/seans-playground`
+- Keycloak admin console: `https://sean.vertical-stack.com/admin/seans-playground/console/`
+
+The remote application directory is:
+
+```text
+/home/swillison/source/applications/seans-playground
+```
+
+The remote `.env` file is intentionally not committed and should remain mode `600`.
+
+Redeploy the home server stack from your local checkout:
+
+```bash
+make deploy-sacrates-cave
+```
+
+The deploy target runs `scripts/deploy-sacrates-cave.sh`. It reads the target host from the ignored local `.env` value `SEANS_PLAYGROUND_LOCAL_DEV_SERVER`, syncs the repository while excluding local secrets and build output, preserves the remote `.env`, rebuilds `docker-compose.home.yml`, and verifies the public health endpoints.
+
 ## Running Pieces Separately
 
 The simplest local workflow is Docker-first with `make up`. If you want to run parts manually:

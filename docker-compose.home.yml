@@ -1,0 +1,113 @@
+name: seans-playground-home
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: seans-playground-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-seans_playground}
+      POSTGRES_USER: ${POSTGRES_USER:-seans_playground}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./infrastructure/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$${POSTGRES_USER}\" -d \"$${POSTGRES_DB}\""]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - app
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.6.1
+    container_name: seans-playground-keycloak
+    restart: unless-stopped
+    command: ["start-dev", "--import-realm"]
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_ADMIN_USERNAME:-admin}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+      KC_HTTP_ENABLED: "true"
+      KC_HTTP_PORT: 8080
+      KC_HOSTNAME: https://sean.vertical-stack.com
+      KC_HOSTNAME_STRICT: "false"
+      KC_PROXY_HEADERS: xforwarded
+    volumes:
+      - keycloak-data:/opt/keycloak/data
+      - ./infrastructure/keycloak/seans-playground-realm.json:/opt/keycloak/data/import/seans-playground-realm.json:ro
+    networks:
+      app:
+      waf_private:
+        aliases:
+          - seans-playground-keycloak
+
+  api:
+    build:
+      context: .
+      dockerfile: src/SeansPlayground.Api/Dockerfile
+    container_name: seans-playground-api
+    restart: unless-stopped
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__Postgres: Host=postgres;Port=5432;Database=${POSTGRES_DB:-seans_playground};Username=${POSTGRES_USER:-seans_playground};Password=${POSTGRES_PASSWORD}
+      Authentication__Authority: http://keycloak:8080/realms/seans-playground
+      Authentication__Audience: seans-playground-api
+      Authentication__RequireHttpsMetadata: "false"
+      Authentication__ValidIssuers__0: https://sean.vertical-stack.com/realms/seans-playground
+      Authentication__ValidIssuers__1: http://keycloak:8080/realms/seans-playground
+      Cors__AllowedOrigins__0: https://sean.vertical-stack.com
+    depends_on:
+      postgres:
+        condition: service_healthy
+      keycloak:
+        condition: service_started
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:8080/health >/dev/null || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+    networks:
+      app:
+      waf_private:
+        aliases:
+          - seans-playground-api
+
+  web:
+    build:
+      context: .
+      dockerfile: src/SeansPlayground.Web/Dockerfile
+      args:
+        VITE_API_BASE_URL: https://sean.vertical-stack.com
+        VITE_KEYCLOAK_AUTHORITY: https://sean.vertical-stack.com/realms/seans-playground
+        VITE_KEYCLOAK_ADMIN_URL: https://sean.vertical-stack.com/admin/seans-playground/console/
+        VITE_KEYCLOAK_CLIENT_ID: seans-playground-web
+    container_name: seans-playground-web
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
+      keycloak:
+        condition: service_started
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O - http://127.0.0.1/ >/dev/null 2>&1 || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+    networks:
+      app:
+      waf_private:
+        aliases:
+          - sean-vertical-stack-origin
+          - seans-playground-web
+
+volumes:
+  postgres-data:
+  keycloak-data:
+
+networks:
+  app:
+  waf_private:
+    name: ${WAF_NETWORK:-home-coraza-waf_waf_private}
+    external: true
