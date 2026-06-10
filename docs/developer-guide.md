@@ -310,6 +310,8 @@ NASA_API_KEY=your-nasa-key
 
 Docker maps those values into the API as `DataGov__ApiKey` and `Nasa__ApiKey`. The NASA-specific key takes precedence when both are set.
 
+APOD uses `Nasa__BaseUrl`, which defaults to `https://api.nasa.gov`. DONKI uses `Nasa__DonkiBaseUrl`, which defaults to the CCMC backend `https://kauai.ccmc.gsfc.nasa.gov/DONKI/WS/get` because the `api.nasa.gov/DONKI/*` proxy may return upstream `503` errors even when the API key is valid.
+
 ## Keycloak
 
 The local realm import lives in:

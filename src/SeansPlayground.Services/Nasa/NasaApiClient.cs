@@ -42,8 +42,8 @@ public sealed class NasaApiClient(
         DateOnly endDate,
         CancellationToken cancellationToken)
     {
-        var requestUri = BuildNasaUri(
-            $"DONKI/{eventType}",
+        var requestUri = BuildDonkiUri(
+            eventType,
             ("startDate", startDate.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)),
             ("endDate", endDate.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)));
 
@@ -102,6 +102,15 @@ public sealed class NasaApiClient(
             .Select(item => $"{Uri.EscapeDataString(item.Item1)}={Uri.EscapeDataString(item.Item2)}");
 
         return $"{baseUrl.TrimEnd('/')}/{path.TrimStart('/')}?{string.Join("&", parameters)}";
+    }
+
+    private string BuildDonkiUri(string eventType, params (string Name, string Value)[] query)
+    {
+        var baseUrl = configuration["Nasa:DonkiBaseUrl"] ?? "https://kauai.ccmc.gsfc.nasa.gov/DONKI/WS/get";
+        var parameters = query
+            .Select(item => $"{Uri.EscapeDataString(item.Item1)}={Uri.EscapeDataString(item.Item2)}");
+
+        return $"{baseUrl.TrimEnd('/')}/{Uri.EscapeDataString(eventType)}?{string.Join("&", parameters)}";
     }
 
     private static string ReadExternalId(string eventType, JsonElement element, int index)

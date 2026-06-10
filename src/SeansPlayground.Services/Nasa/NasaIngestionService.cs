@@ -25,7 +25,18 @@ public sealed class NasaIngestionService(
 
         foreach (var feed in NasaDonkiCatalog.Feeds)
         {
-            await RefreshDonkiFeedAsync(feed.EventType, today, cancellationToken);
+            try
+            {
+                await RefreshDonkiFeedAsync(feed.EventType, today, cancellationToken);
+            }
+            catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "NASA DONKI {EventType} ingestion failed.", feed.EventType);
+            }
         }
     }
 
