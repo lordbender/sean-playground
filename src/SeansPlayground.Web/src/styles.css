@@ -732,6 +732,176 @@ body {
   font-weight: 800 !important;
 }
 
+.documentationPage {
+  display: grid;
+  gap: 24px;
+}
+
+.documentationHero {
+  min-height: 210px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  padding: clamp(28px, 4vw, 46px);
+  border-radius: 8px;
+  color: #fff8e8;
+  background:
+    linear-gradient(90deg, rgba(242, 193, 78, 0.26) 0 1px, transparent 1px 20px),
+    radial-gradient(circle at 18% 12%, rgba(242, 193, 78, 0.58), transparent 24%),
+    linear-gradient(135deg, var(--sp-green), var(--sp-purple) 44%, var(--sp-purple-dark));
+  box-shadow: var(--sp-stage-shadow);
+}
+
+.documentationShell {
+  display: grid;
+  grid-template-columns: minmax(230px, 300px) minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.documentationNav,
+.markdownPanel {
+  border-radius: 8px;
+  border: 1px solid rgba(242, 193, 78, 0.5);
+  background:
+    linear-gradient(180deg, rgba(255, 253, 247, 0.98), rgba(255, 248, 232, 0.95)),
+    repeating-linear-gradient(135deg, rgba(91, 26, 142, 0.06) 0 8px, transparent 8px 16px);
+  box-shadow: var(--sp-shadow);
+}
+
+.documentationNav {
+  position: sticky;
+  top: 24px;
+  display: grid;
+  gap: 16px;
+  padding: 18px;
+}
+
+.docNavItem {
+  justify-content: flex-start !important;
+  padding: 14px !important;
+  color: var(--sp-ink) !important;
+  text-align: left !important;
+  border: 1px solid rgba(91, 26, 142, 0.12) !important;
+  background: rgba(255, 255, 255, 0.46) !important;
+}
+
+.docNavItem.active {
+  color: var(--sp-purple) !important;
+  border-color: rgba(242, 193, 78, 0.8) !important;
+  background: linear-gradient(135deg, rgba(242, 193, 78, 0.28), rgba(91, 26, 142, 0.1)) !important;
+  box-shadow: inset 4px 0 0 var(--sp-gold);
+}
+
+.docNavItem span {
+  display: block;
+  margin-top: 3px;
+  color: var(--mui-palette-text-secondary);
+  font-size: 12px;
+  text-transform: none;
+}
+
+.markdownPanel {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.markdownHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 22px 26px;
+  border-bottom: 1px solid rgba(91, 26, 142, 0.14);
+  background: linear-gradient(135deg, rgba(242, 193, 78, 0.2), rgba(91, 26, 142, 0.08));
+}
+
+.markdownBody {
+  padding: 28px;
+  color: var(--sp-ink);
+  line-height: 1.68;
+}
+
+.markdownBody h1,
+.markdownBody h2,
+.markdownBody h3,
+.markdownBody h4 {
+  color: var(--sp-purple);
+  line-height: 1.18;
+}
+
+.markdownBody h1 {
+  margin-top: 0;
+  font-size: 34px;
+}
+
+.markdownBody h2 {
+  margin-top: 34px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid rgba(242, 193, 78, 0.48);
+  font-size: 24px;
+}
+
+.markdownBody h3 {
+  margin-top: 26px;
+  font-size: 20px;
+}
+
+.markdownBody a {
+  color: var(--sp-purple);
+  font-weight: 800;
+}
+
+.markdownBody code {
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: rgba(91, 26, 142, 0.1);
+  color: var(--sp-ruby);
+  font-size: 0.92em;
+}
+
+.markdownBody pre {
+  overflow-x: auto;
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid rgba(242, 193, 78, 0.42);
+  background: #25152f;
+  box-shadow: inset 0 0 0 1px rgba(255, 248, 232, 0.06);
+}
+
+.markdownBody pre code {
+  padding: 0;
+  color: #fff8e8;
+  background: transparent;
+}
+
+.markdownBody table {
+  width: 100%;
+  border-collapse: collapse;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.markdownBody th,
+.markdownBody td {
+  padding: 12px 14px;
+  border: 1px solid rgba(91, 26, 142, 0.14);
+  text-align: left;
+}
+
+.markdownBody th {
+  color: #fff8e8;
+  background: linear-gradient(135deg, var(--sp-purple), var(--sp-green));
+}
+
+.markdownBody blockquote {
+  margin-left: 0;
+  padding: 12px 18px;
+  border-left: 4px solid var(--sp-gold);
+  background: rgba(242, 193, 78, 0.16);
+}
+
 @media (max-width: 1180px) {
   .appShell {
     grid-template-columns: 232px minmax(0, 1fr);
@@ -739,7 +909,8 @@ body {
 
   .metricGrid,
   .panelGrid,
-  .backgroundGrid {
+  .backgroundGrid,
+  .documentationShell {
     grid-template-columns: repeat(2, minmax(240px, 1fr));
   }
 }
@@ -792,13 +963,20 @@ body {
   .panelGrid,
   .backgroundGrid,
   .educationGrid,
+  .documentationShell,
   .loginPage {
     grid-template-columns: 1fr;
   }
 
-  .backgroundHero {
+  .backgroundHero,
+  .documentationHero,
+  .markdownHeader {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .documentationNav {
+    position: static;
   }
 
   .repoItem {

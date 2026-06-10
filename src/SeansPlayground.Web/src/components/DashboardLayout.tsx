@@ -1,16 +1,11 @@
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
 import AdminPanelSettingsOutlinedIcon from "@mui/icons-material/AdminPanelSettingsOutlined";
-import ArticleOutlinedIcon from "@mui/icons-material/ArticleOutlined";
 import DashboardOutlinedIcon from "@mui/icons-material/DashboardOutlined";
 import HelpOutlineOutlinedIcon from "@mui/icons-material/HelpOutlineOutlined";
-import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 import MenuIcon from "@mui/icons-material/Menu";
 import NotificationsNoneOutlinedIcon from "@mui/icons-material/NotificationsNoneOutlined";
-import PaletteOutlinedIcon from "@mui/icons-material/PaletteOutlined";
 import SearchIcon from "@mui/icons-material/Search";
-import SecurityOutlinedIcon from "@mui/icons-material/SecurityOutlined";
-import TextFieldsOutlinedIcon from "@mui/icons-material/TextFieldsOutlined";
 import WorkHistoryOutlinedIcon from "@mui/icons-material/WorkHistoryOutlined";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -33,7 +28,6 @@ type NavItem = {
   label: string;
   icon: SvgIconComponent;
   section?: AppSection;
-  hasMenu?: boolean;
 };
 
 type NavSection = {
@@ -45,30 +39,14 @@ type NavSection = {
 const sections: NavSection[] = [
   {
     eyebrow: "Sean's Playground",
-    caption: "Dashboard",
     items: [
       { label: "Dashboard", icon: DashboardOutlinedIcon, section: "dashboard" },
       { label: "Sean's Background", icon: WorkHistoryOutlinedIcon, section: "background" }
     ]
   },
   {
-    eyebrow: "Pages",
-    caption: "Prebuild Pages",
-    items: [
-      { label: "Sample Page", icon: ArticleOutlinedIcon },
-      { label: "Authentication", icon: SecurityOutlinedIcon, hasMenu: true }
-    ]
-  },
-  {
-    eyebrow: "Utils",
-    items: [
-      { label: "Icons", icon: PaletteOutlinedIcon },
-      { label: "Typography", icon: TextFieldsOutlinedIcon }
-    ]
-  },
-  {
     eyebrow: "Support",
-    items: [{ label: "Documentation", icon: HelpOutlineOutlinedIcon }]
+    items: [{ label: "Documentation", icon: HelpOutlineOutlinedIcon, section: "documentation" }]
   }
 ];
 
@@ -183,7 +161,6 @@ export function DashboardLayout({ activeSection, children, onNavigate }: Dashboa
                   key={item.label}
                   className={isActive ? "navItem active" : "navItem"}
                   startIcon={<Icon />}
-                  endIcon={item.hasMenu ? <KeyboardArrowDownOutlinedIcon /> : undefined}
                   onClick={item.section ? () => onNavigate(item.section!) : undefined}
                   fullWidth
                 >
