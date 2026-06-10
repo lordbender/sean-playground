@@ -10,6 +10,8 @@ namespace SeansPlayground.Api.Controllers;
 [Route("api/registration")]
 public sealed class RegistrationController(IUserRegistrationService registrationService) : ControllerBase
 {
+    [ProducesResponseType<UserRegistrationResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<UserRegistrationResponse>(StatusCodes.Status400BadRequest)]
     [HttpPost("users")]
     public async Task<IActionResult> CreateUser(
         CreateUserRegistrationRequest request,

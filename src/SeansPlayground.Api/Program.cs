@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi;
+using SeansPlayground.Api.OpenApi;
 using SeansPlayground.Contracts;
 using SeansPlayground.Core.Data;
 using SeansPlayground.Core.Playground;
@@ -12,6 +14,28 @@ var connectionString = builder.Configuration.GetConnectionString("Postgres")
     ?? throw new InvalidOperationException("Missing Postgres connection string.");
 
 builder.Services.AddOpenApi();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "Sean's Playground API",
+        Version = "v1",
+        Description = "Local API for Sean's Playground dashboard, background profile, NASA data, registration, and system status."
+    });
+
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "Paste a Keycloak access token. The header is sent as: Bearer {token}."
+    });
+
+    options.OperationFilter<AuthorizeOperationFilter>();
+});
 builder.Services.AddSeansPlaygroundServices();
 builder.Services.AddControllers();
 builder.Services.AddDbContext<PlaygroundDbContext>(options => options.UseNpgsql(connectionString));
@@ -55,6 +79,12 @@ await using (var scope = app.Services.CreateAsyncScope())
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.UseSwagger();
+    app.UseSwaggerUI(options =>
+    {
+        options.DocumentTitle = "Sean's Playground API";
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "Sean's Playground API v1");
+    });
 }
 
 app.UseCors("Frontend");
@@ -62,13 +92,22 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 
-app.MapGet("/health", () => Results.Ok(new { status = "ok", application = PlaygroundConstants.ApplicationName }));
+app.MapGet("/health", () => Results.Ok(new { status = "ok", application = PlaygroundConstants.ApplicationName }))
+    .WithName("GetHealth")
+    .WithTags("System")
+    .WithSummary("Checks API process health.")
+    .WithDescription("Returns a lightweight health response for Docker and reverse proxy checks.")
+    .Produces(StatusCodes.Status200OK);
 
 app.MapGet("/api/dashboard/summary", (IPlaygroundDashboardService dashboardService) =>
 {
     return Results.Ok(dashboardService.GetSummary());
 })
-.WithName("GetDashboardSummary");
+    .WithName("GetDashboardSummary")
+    .WithTags("Dashboard")
+    .WithSummary("Gets the legacy dashboard summary.")
+    .WithDescription("Returns the original Materially-style dashboard card and chart data.")
+    .Produces<SeansPlayground.Contracts.Dashboard.DashboardSummaryResponse>(StatusCodes.Status200OK);
 
 app.MapGet("/api/system/status", async (PlaygroundDbContext dbContext, IConfiguration configuration, IWebHostEnvironment environment) =>
 {
@@ -94,6 +133,10 @@ app.MapGet("/api/system/status", async (PlaygroundDbContext dbContext, IConfigur
 
     return Results.Ok(response);
 })
-.WithName("GetSystemStatus");
+    .WithName("GetSystemStatus")
+    .WithTags("System")
+    .WithSummary("Gets application dependency status.")
+    .WithDescription("Checks database connectivity and returns the configured identity provider and runtime environment.")
+    .Produces<SystemStatusResponse>(StatusCodes.Status200OK);
 
 app.Run();

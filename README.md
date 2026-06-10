@@ -31,6 +31,8 @@ Then open:
 
 - Web: http://localhost:3000
 - API health: http://localhost:5100/health
+- Swagger UI: http://localhost:5100/swagger
+- OpenAPI spec: http://localhost:5100/swagger/v1/swagger.json
 - Keycloak: http://localhost:8080
 - Postgres: `localhost:5432`
 

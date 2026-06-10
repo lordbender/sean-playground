@@ -46,6 +46,9 @@ Then open:
 
 - Web: `http://localhost:3000`
 - API health: `http://localhost:5100/health`
+- Swagger UI: `http://localhost:5100/swagger`
+- OpenAPI spec: `http://localhost:5100/swagger/v1/swagger.json`
+- .NET OpenAPI document: `http://localhost:5100/openapi/v1.json`
 - Keycloak: `http://localhost:8080`
 - Postgres: `localhost:5432`
 
@@ -209,6 +212,18 @@ The frontend expects:
 
 - API base URL: `http://localhost:5100`
 - Keycloak realm: `http://localhost:8080/realms/seans-playground`
+
+## API Specs
+
+The API publishes OpenAPI specs and Swagger UI in the local Development environment:
+
+- Swagger UI: `http://localhost:5100/swagger`
+- Swagger JSON: `http://localhost:5100/swagger/v1/swagger.json`
+- .NET OpenAPI JSON: `http://localhost:5100/openapi/v1.json`
+
+The Swagger document includes a Bearer security scheme. For protected endpoints, sign in through Keycloak, copy a Keycloak access token, and use the `Authorize` button in Swagger UI.
+
+Swagger is intentionally local/development-only unless the API environment or hosting policy is changed later.
 
 ## Database
 

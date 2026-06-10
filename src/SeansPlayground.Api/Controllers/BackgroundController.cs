@@ -2,6 +2,7 @@ using System.Security.Claims;
 using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SeansPlayground.Contracts.Background;
 using SeansPlayground.Services.Background;
 
 namespace SeansPlayground.Api.Controllers;
@@ -11,6 +12,9 @@ namespace SeansPlayground.Api.Controllers;
 [Route("api/background")]
 public sealed class BackgroundController(IBackgroundService backgroundService) : ControllerBase
 {
+    [ProducesResponseType<BackgroundResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [HttpGet("sean")]
     public async Task<IActionResult> GetSeanBackground(CancellationToken cancellationToken)
     {

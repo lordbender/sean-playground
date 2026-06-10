@@ -1,6 +1,16 @@
-@SeansPlayground.Api_HostAddress = http://localhost:0
+@SeansPlayground.Api_HostAddress = http://localhost:5100
 
-GET {{SeansPlayground.Api_HostAddress}}/weatherforecast/
+GET {{SeansPlayground.Api_HostAddress}}/health
+Accept: application/json
+
+###
+
+GET {{SeansPlayground.Api_HostAddress}}/swagger/v1/swagger.json
+Accept: application/json
+
+###
+
+GET {{SeansPlayground.Api_HostAddress}}/api/system/status
 Accept: application/json
 
 ###
