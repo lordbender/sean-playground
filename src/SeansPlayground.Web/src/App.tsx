@@ -1,11 +1,12 @@
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { useAuth } from "./auth/AuthProvider";
-import { BackgroundPage } from "./pages/BackgroundPage";
-import { DashboardPage } from "./pages/DashboardPage";
-import { DocumentationPage } from "./pages/DocumentationPage";
 import { LoginPage } from "./pages/LoginPage";
 
 export type AppSection = "dashboard" | "background" | "documentation";
+
+const BackgroundPage = lazy(() => import("./pages/BackgroundPage").then((module) => ({ default: module.BackgroundPage })));
+const DashboardPage = lazy(() => import("./pages/DashboardPage").then((module) => ({ default: module.DashboardPage })));
+const DocumentationPage = lazy(() => import("./pages/DocumentationPage").then((module) => ({ default: module.DocumentationPage })));
 
 export function App() {
   const { completeSignIn, isAuthenticated } = useAuth();
@@ -24,32 +25,42 @@ export function App() {
 
   if (activeSection === "background") {
     return (
-      <BackgroundPage
-        activeSection={activeSection}
-        isNavCollapsed={isNavCollapsed}
-        onNavigate={setActiveSection}
-        onToggleNavigation={() => setIsNavCollapsed((current) => !current)}
-      />
+      <Suspense fallback={<PageLoading />}>
+        <BackgroundPage
+          activeSection={activeSection}
+          isNavCollapsed={isNavCollapsed}
+          onNavigate={setActiveSection}
+          onToggleNavigation={() => setIsNavCollapsed((current) => !current)}
+        />
+      </Suspense>
     );
   }
 
   if (activeSection === "documentation") {
     return (
-      <DocumentationPage
+      <Suspense fallback={<PageLoading />}>
+        <DocumentationPage
+          activeSection={activeSection}
+          isNavCollapsed={isNavCollapsed}
+          onNavigate={setActiveSection}
+          onToggleNavigation={() => setIsNavCollapsed((current) => !current)}
+        />
+      </Suspense>
+    );
+  }
+
+  return (
+    <Suspense fallback={<PageLoading />}>
+      <DashboardPage
         activeSection={activeSection}
         isNavCollapsed={isNavCollapsed}
         onNavigate={setActiveSection}
         onToggleNavigation={() => setIsNavCollapsed((current) => !current)}
       />
-    );
-  }
-
-  return (
-    <DashboardPage
-      activeSection={activeSection}
-      isNavCollapsed={isNavCollapsed}
-      onNavigate={setActiveSection}
-      onToggleNavigation={() => setIsNavCollapsed((current) => !current)}
-    />
+    </Suspense>
   );
+}
+
+function PageLoading() {
+  return <div className="loadingPanel">Loading workspace</div>;
 }
