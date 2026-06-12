@@ -226,6 +226,8 @@ function ApodCarousel({
             key={selectedApod.date}
             src={`${apiBaseUrl}${selectedApod.imageUrl}`}
             alt={selectedApod.title}
+            decoding="async"
+            loading="eager"
           />
         ) : (
           <Box className="apodPlaceholder">Awaiting APOD image</Box>
@@ -271,7 +273,7 @@ function ApodCarousel({
                 onClick={() => onActiveIndexChange(index)}
                 aria-label={`Show APOD from ${formatDate(apod.date)}`}
               >
-                <img src={`${apiBaseUrl}${apod.imageUrl}`} alt="" loading="lazy" />
+                <img src={`${apiBaseUrl}${apod.imageUrl}`} alt="" loading="lazy" decoding="async" />
                 <span>{formatShortDate(apod.date)}</span>
               </button>
             ))}

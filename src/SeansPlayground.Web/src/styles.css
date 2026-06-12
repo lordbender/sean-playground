@@ -112,6 +112,10 @@ body {
   background: linear-gradient(135deg, rgba(242, 193, 78, 0.22), rgba(91, 26, 142, 0.08));
 }
 
+.profilePopper {
+  z-index: 1300;
+}
+
 .sideRail {
   padding: 28px 10px;
   background:

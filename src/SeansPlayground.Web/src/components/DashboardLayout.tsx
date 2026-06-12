@@ -10,16 +10,20 @@ import SearchIcon from "@mui/icons-material/Search";
 import WorkHistoryOutlinedIcon from "@mui/icons-material/WorkHistoryOutlined";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
+import ClickAwayListener from "@mui/material/ClickAwayListener";
+import Grow from "@mui/material/Grow";
 import IconButton from "@mui/material/IconButton";
 import InputAdornment from "@mui/material/InputAdornment";
 import ListItemIcon from "@mui/material/ListItemIcon";
-import Menu from "@mui/material/Menu";
+import MenuList from "@mui/material/MenuList";
 import MenuItem from "@mui/material/MenuItem";
+import Paper from "@mui/material/Paper";
+import Popper from "@mui/material/Popper";
 import TextField from "@mui/material/TextField";
 import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 import { SvgIconComponent } from "@mui/icons-material";
-import { MouseEvent, PropsWithChildren, useState } from "react";
+import { KeyboardEvent, MouseEvent, PropsWithChildren, useState } from "react";
 import { AppSection } from "../App";
 import { useAuth } from "../auth/AuthProvider";
 import { keycloakAdminUrl } from "../auth/authConfig";
@@ -78,6 +82,12 @@ export function DashboardLayout({
 
   const closeProfileMenu = () => {
     setProfileAnchor(null);
+  };
+
+  const handleProfileMenuKeyDown = (event: KeyboardEvent) => {
+    if (event.key === "Escape" || event.key === "Tab") {
+      closeProfileMenu();
+    }
   };
 
   const openKeycloakAdmin = () => {
@@ -139,41 +149,53 @@ export function DashboardLayout({
             <AccountCircleOutlinedIcon />
           </IconButton>
         </Tooltip>
-        <Menu
+        <Popper
           id="profile-menu"
           anchorEl={profileAnchor}
           open={profileMenuOpen}
-          onClose={closeProfileMenu}
-          anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
-          transformOrigin={{ horizontal: "right", vertical: "top" }}
+          placement="bottom-end"
+          transition
+          className="profilePopper"
         >
-          <Box className="profileMenuHeader">
-            <Typography fontWeight={800}>{user?.profile.name ?? user?.profile.preferred_username ?? "Account"}</Typography>
-            <Typography color="text.secondary" fontSize={13}>
-              {isAdmin ? "Admins" : "Users"}
-            </Typography>
-          </Box>
-          {isAdmin ? (
-            <MenuItem onClick={openKeycloakAdmin}>
-              <ListItemIcon>
-                <AdminPanelSettingsOutlinedIcon fontSize="small" />
-              </ListItemIcon>
-              Manage Keycloak
-            </MenuItem>
-          ) : null}
-          <MenuItem onClick={openSwaggerDocs}>
-            <ListItemIcon>
-              <ApiOutlinedIcon fontSize="small" />
-            </ListItemIcon>
-            API Swagger Docs
-          </MenuItem>
-          <MenuItem onClick={handleSignOut}>
-            <ListItemIcon>
-              <LogoutOutlinedIcon fontSize="small" />
-            </ListItemIcon>
-            Sign out
-          </MenuItem>
-        </Menu>
+          {({ TransitionProps }) => (
+            <Grow {...TransitionProps} style={{ transformOrigin: "right top" }}>
+              <Paper elevation={8}>
+                <ClickAwayListener onClickAway={closeProfileMenu}>
+                  <Box>
+                    <Box className="profileMenuHeader">
+                      <Typography fontWeight={800}>{user?.profile.name ?? user?.profile.preferred_username ?? "Account"}</Typography>
+                      <Typography color="text.secondary" fontSize={13}>
+                        {isAdmin ? "Admins" : "Users"}
+                      </Typography>
+                    </Box>
+                    <MenuList autoFocusItem={profileMenuOpen} onKeyDown={handleProfileMenuKeyDown}>
+                      {isAdmin ? (
+                        <MenuItem onClick={openKeycloakAdmin}>
+                          <ListItemIcon>
+                            <AdminPanelSettingsOutlinedIcon fontSize="small" />
+                          </ListItemIcon>
+                          Manage Keycloak
+                        </MenuItem>
+                      ) : null}
+                      <MenuItem onClick={openSwaggerDocs}>
+                        <ListItemIcon>
+                          <ApiOutlinedIcon fontSize="small" />
+                        </ListItemIcon>
+                        API Swagger Docs
+                      </MenuItem>
+                      <MenuItem onClick={handleSignOut}>
+                        <ListItemIcon>
+                          <LogoutOutlinedIcon fontSize="small" />
+                        </ListItemIcon>
+                        Sign out
+                      </MenuItem>
+                    </MenuList>
+                  </Box>
+                </ClickAwayListener>
+              </Paper>
+            </Grow>
+          )}
+        </Popper>
       </Box>
 
       <Box component="aside" className="sideRail" id="primary-navigation">
