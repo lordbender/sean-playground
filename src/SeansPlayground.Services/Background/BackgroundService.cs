@@ -23,6 +23,25 @@ public sealed class BackgroundService(PlaygroundDbContext dbContext) : IBackgrou
             return null;
         }
 
+        return await BuildBackgroundResponseAsync(allowedRoles, cancellationToken);
+    }
+
+    public async Task<BackgroundResponse> GetPublicBackgroundAsync(CancellationToken cancellationToken)
+    {
+        var allowedRoles = await dbContext.BackgroundSectionEntitlements
+            .AsNoTracking()
+            .Where(item => item.SectionKey == BackgroundConstants.SectionKey)
+            .OrderBy(item => item.RoleName)
+            .Select(item => item.RoleName)
+            .ToArrayAsync(cancellationToken);
+
+        return await BuildBackgroundResponseAsync(allowedRoles, cancellationToken);
+    }
+
+    private async Task<BackgroundResponse> BuildBackgroundResponseAsync(
+        IReadOnlyCollection<string> allowedRoles,
+        CancellationToken cancellationToken)
+    {
         var profile = await dbContext.BackgroundProfiles
             .AsNoTracking()
             .SingleOrDefaultAsync(item => item.Slug == BackgroundConstants.ProfileSlug, cancellationToken)

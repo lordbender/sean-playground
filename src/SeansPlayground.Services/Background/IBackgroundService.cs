@@ -5,4 +5,6 @@ namespace SeansPlayground.Services.Background;
 public interface IBackgroundService
 {
     Task<BackgroundResponse?> GetBackgroundAsync(IReadOnlyCollection<string> userRoles, CancellationToken cancellationToken);
+
+    Task<BackgroundResponse> GetPublicBackgroundAsync(CancellationToken cancellationToken);
 }

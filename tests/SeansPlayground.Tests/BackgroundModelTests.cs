@@ -88,6 +88,20 @@ public sealed class BackgroundModelTests(PostgreSqlFixture fixture) : IClassFixt
     }
 
     [Fact]
+    public async Task BackgroundServiceReturnsPublicResumeWithoutRoleCheck()
+    {
+        await using var dbContext = fixture.CreateContext();
+        var service = new BackgroundService(dbContext);
+
+        var response = await service.GetPublicBackgroundAsync(CancellationToken.None);
+
+        Assert.Equal("Sean Willison", response.Profile.DisplayName);
+        Assert.Contains(response.SocialLinks, item => item.PlatformName == "LinkedIn" && item.Url == "https://www.linkedin.com/in/swillison");
+        Assert.Contains(response.Repositories, item => item.OwnerName == "lordbender" && item.RepositoryName == "sean-playground");
+        Assert.Contains("Users", response.AllowedRoles);
+    }
+
+    [Fact]
     public async Task BackgroundServiceReturnsNullForRoleWithoutEntitlement()
     {
         await using var dbContext = fixture.CreateContext();

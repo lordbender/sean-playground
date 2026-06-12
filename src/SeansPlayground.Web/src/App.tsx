@@ -1,6 +1,5 @@
 import { lazy, Suspense, useEffect, useState } from "react";
 import { useAuth } from "./auth/AuthProvider";
-import { LoginPage } from "./pages/LoginPage";
 
 export type AppSection = "dashboard" | "background" | "documentation";
 
@@ -20,7 +19,11 @@ export function App() {
   }, [completeSignIn]);
 
   if (!isAuthenticated) {
-    return <LoginPage />;
+    return (
+      <Suspense fallback={<PageLoading />}>
+        <BackgroundPage publicView />
+      </Suspense>
+    );
   }
 
   if (activeSection === "background") {

@@ -10,7 +10,8 @@ test("authenticated user can zoom DONKI charts and open drilldown detail", async
     (response) => response.url().includes("/api/nasa/dashboard") && response.status() === 200
   );
 
-  await page.getByRole("button", { name: /sign in with keycloak/i }).click();
+  await page.getByRole("button", { name: /public profile menu/i }).click();
+  await page.getByRole("menuitem", { name: /^sign in$/i }).click();
   await expect(page).toHaveURL(/\/realms\/seans-playground\/protocol\/openid-connect\/auth/);
   await page.getByLabel(/username or email/i).fill(username);
   await page.getByRole("textbox", { name: /^password$/i }).fill(password);

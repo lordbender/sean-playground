@@ -12,6 +12,14 @@ namespace SeansPlayground.Api.Controllers;
 [Route("api/background")]
 public sealed class BackgroundController(IBackgroundService backgroundService) : ControllerBase
 {
+    [AllowAnonymous]
+    [ProducesResponseType<BackgroundResponse>(StatusCodes.Status200OK)]
+    [HttpGet("sean/public")]
+    public async Task<IActionResult> GetPublicSeanBackground(CancellationToken cancellationToken)
+    {
+        return Ok(await backgroundService.GetPublicBackgroundAsync(cancellationToken));
+    }
+
     [ProducesResponseType<BackgroundResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]

@@ -6,13 +6,19 @@ const password = process.env.E2E_PASSWORD ?? "playground";
 test("authenticated user can view Sean's Background and open API docs", async ({ page }) => {
   await page.goto("/");
 
-  await page.getByRole("button", { name: /sign in with keycloak/i }).click();
+  await expect(page.getByRole("heading", { name: "Sean Willison" })).toBeVisible();
+  await expect(page.getByText("linkedin.com/in/swillison")).toBeVisible();
+  await expect(page.getByText("lordbender/sean-playground")).toBeVisible();
+
+  await page.getByRole("button", { name: /public profile menu/i }).click();
+  await page.getByRole("menuitem", { name: /^sign in$/i }).click();
 
   await expect(page).toHaveURL(/\/realms\/seans-playground\/protocol\/openid-connect\/auth/);
   await page.getByLabel(/username or email/i).fill(username);
   await page.getByRole("textbox", { name: /^password$/i }).fill(password);
   await page.getByRole("button", { name: /sign in/i }).click();
 
+  await expect(page.getByRole("heading", { name: /NASA space weather/i })).toBeVisible();
   await expect(page.getByRole("button", { name: /sean's background/i })).toBeVisible();
 
   const backgroundResponse = page.waitForResponse(
