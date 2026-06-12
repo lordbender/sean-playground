@@ -693,9 +693,9 @@ function DonkiDetailsDialog({ detail, onClose }: { detail: DonkiDetailState; onC
                 {fields.length > 0 ? (
                   <Box className="donkiDetailFieldGrid">
                     {fields.map(([key, value]) => (
-                      <Box key={key}>
+                      <Box className={isWideDonkiDetailField(key, value) ? "donkiDetailField wide" : "donkiDetailField"} key={key}>
                         <Typography className="panelEyebrow">{key}</Typography>
-                        <Typography fontWeight={800}>{value}</Typography>
+                        <Typography className="donkiDetailFieldValue" fontWeight={800}>{value}</Typography>
                       </Box>
                     ))}
                   </Box>
@@ -744,6 +744,13 @@ function summarizeRawPayload(rawJsonPayload: string) {
   } catch {
     return [];
   }
+}
+
+function isWideDonkiDetailField(key: string, value: string) {
+  return key.toLowerCase().includes("link") ||
+    key.toLowerCase().includes("note") ||
+    value.startsWith("http") ||
+    value.length > 34;
 }
 
 function formatRawPayload(rawJsonPayload: string) {

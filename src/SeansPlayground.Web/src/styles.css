@@ -920,6 +920,20 @@ body {
   gap: 12px;
 }
 
+.donkiDetailField {
+  min-width: 0;
+}
+
+.donkiDetailField.wide {
+  grid-column: 1 / -1;
+}
+
+.donkiDetailFieldValue {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  line-height: 1.45 !important;
+}
+
 .donkiRawPayload {
   max-height: 360px;
   overflow: auto;
