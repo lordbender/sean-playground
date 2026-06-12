@@ -9,4 +9,10 @@ public interface INasaDashboardService
     Task<LatestApodImage?> GetLatestApodImageAsync(CancellationToken cancellationToken);
 
     Task<LatestApodImage?> GetApodImageAsync(DateOnly apodDate, CancellationToken cancellationToken);
+
+    Task<NasaDonkiEventDetailResponse> GetDonkiEventDetailsAsync(
+        string eventType,
+        DateOnly? startDate,
+        DateOnly? endDate,
+        CancellationToken cancellationToken);
 }

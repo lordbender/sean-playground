@@ -643,11 +643,34 @@ body {
   width: 100%;
   height: 240px;
   display: block;
+  cursor: crosshair;
+  touch-action: none;
+  user-select: none;
 }
 
 .chartGridLine {
   stroke: rgba(91, 26, 142, 0.14);
   stroke-width: 1;
+}
+
+.chartDragSelection {
+  fill: rgba(242, 193, 78, 0.26);
+  stroke: rgba(91, 26, 142, 0.34);
+  stroke-width: 1;
+}
+
+.trendLine,
+.trendPoint {
+  cursor: pointer;
+}
+
+.trendLine {
+  transition: stroke-width 160ms ease, opacity 160ms ease;
+}
+
+.trendLine:hover {
+  opacity: 0.86;
+  stroke-width: 6;
 }
 
 .chartAxisText {
@@ -663,13 +686,19 @@ body {
   padding: 0 24px 22px;
 }
 
-.chartLegend span {
+.chartLegend button {
+  appearance: none;
   display: inline-flex;
   align-items: center;
   gap: 8px;
+  padding: 0;
+  border: 0;
   color: var(--sp-ink);
+  background: transparent;
+  cursor: pointer;
   font-size: 13px;
   font-weight: 800;
+  font-family: inherit;
 }
 
 .chartLegend i {
@@ -677,6 +706,14 @@ body {
   height: 5px;
   display: inline-block;
   border-radius: 99px;
+}
+
+.chartHint {
+  margin: -12px 24px 22px !important;
+  color: var(--mui-palette-text-secondary);
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  line-height: 1.45 !important;
 }
 
 .distributionCard {
@@ -696,10 +733,19 @@ body {
 }
 
 .distributionRow {
+  appearance: none;
+  width: 100%;
   display: grid;
   grid-template-columns: minmax(120px, 1fr) minmax(110px, 1.4fr) 42px;
   align-items: center;
   gap: 14px;
+  padding: 0;
+  border: 0;
+  color: inherit;
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
 }
 
 .distributionLabel {
@@ -718,6 +764,11 @@ body {
   height: 100%;
   display: block;
   border-radius: inherit;
+  transition: width 180ms ease, filter 180ms ease;
+}
+
+.distributionRow:hover .distributionTrack span {
+  filter: saturate(1.3) brightness(1.05);
 }
 
 .distributionValue {
@@ -746,6 +797,14 @@ body {
 .donkiCard {
   min-height: 390px;
   overflow: hidden;
+  cursor: pointer;
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.donkiCard:hover,
+.donkiCard:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 34px rgba(53, 16, 79, 0.18);
 }
 
 .donkiCardHeader {
@@ -789,6 +848,13 @@ body {
   flex: 1;
   min-width: 3px;
   border-radius: 99px 99px 2px 2px;
+  cursor: pointer;
+}
+
+.donkiSparkline span:hover,
+.donkiSparkline span:focus-visible {
+  outline: 2px solid rgba(242, 193, 78, 0.86);
+  outline-offset: 2px;
 }
 
 .donkiEventRow {
@@ -798,6 +864,45 @@ body {
   border-radius: 8px;
   border: 1px solid rgba(91, 26, 142, 0.12);
   background: rgba(255, 255, 255, 0.58);
+}
+
+.donkiDetailSummary {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(160px, 1fr));
+  gap: 16px;
+}
+
+.donkiDetailSummary > div,
+.donkiDetailEvent {
+  padding: 16px;
+  border: 1px solid rgba(91, 26, 142, 0.14);
+  border-radius: 8px;
+  background: rgba(255, 248, 232, 0.58);
+}
+
+.donkiDetailEvent {
+  display: grid;
+  gap: 16px;
+}
+
+.donkiDetailFieldGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(140px, 1fr));
+  gap: 12px;
+}
+
+.donkiRawPayload {
+  max-height: 360px;
+  overflow: auto;
+  margin: 8px 0 0;
+  padding: 14px;
+  border-radius: 8px;
+  color: #fff8e8;
+  background: #25152f;
+  font-size: 12px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 .loginPage {
@@ -1389,7 +1494,9 @@ body {
   }
 
   .chartHeader,
-  .distributionRow {
+  .distributionRow,
+  .donkiDetailSummary,
+  .donkiDetailFieldGrid {
     grid-template-columns: 1fr;
   }
 

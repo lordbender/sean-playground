@@ -67,6 +67,22 @@ export type NasaDonkiEvent = {
   eventDate: string;
 };
 
+export type NasaDonkiEventDetail = NasaDonkiEvent & {
+  displayName: string;
+  accent: string;
+  fetchedAt: string;
+  rawJsonPayload: string;
+};
+
+export type NasaDonkiEventDetailResponse = {
+  eventType: string;
+  displayName: string;
+  accent: string;
+  windowStart: string;
+  windowEnd: string;
+  events: NasaDonkiEventDetail[];
+};
+
 export type NasaDonkiSeries = {
   eventType: string;
   displayName: string;

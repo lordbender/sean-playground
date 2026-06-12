@@ -75,6 +75,55 @@ public sealed class NasaDashboardService(PlaygroundDbContext dbContext) : INasaD
         return ToImage(apod);
     }
 
+    public async Task<NasaDonkiEventDetailResponse> GetDonkiEventDetailsAsync(
+        string eventType,
+        DateOnly? startDate,
+        DateOnly? endDate,
+        CancellationToken cancellationToken)
+    {
+        var today = DateOnly.FromDateTime(DateTime.UtcNow);
+        var windowEnd = endDate ?? today;
+        var windowStart = startDate ?? windowEnd.AddDays(-29);
+        var feed = NasaDonkiCatalog.Feeds.FirstOrDefault(
+            item => string.Equals(item.EventType, eventType, StringComparison.OrdinalIgnoreCase)) ??
+            new NasaDonkiFeedDefinition(eventType.ToUpperInvariant(), eventType.ToUpperInvariant(), "#5b1a8e");
+
+        if (windowStart > windowEnd)
+        {
+            (windowStart, windowEnd) = (windowEnd, windowStart);
+        }
+
+        var storedEvents = await dbContext.NasaDonkiEvents
+            .AsNoTracking()
+            .Where(item =>
+                item.EventType == feed.EventType &&
+                item.EventDate >= windowStart &&
+                item.EventDate <= windowEnd)
+            .OrderByDescending(item => item.OccurredAt ?? DateTimeOffset.MinValue)
+            .ThenByDescending(item => item.EventDate)
+            .ToArrayAsync(cancellationToken);
+
+        var events = storedEvents
+            .Select(item => new NasaDonkiEventDetailDto(
+                item.EventType,
+                feed.DisplayName,
+                feed.Accent,
+                item.ExternalId,
+                item.OccurredAt,
+                item.EventDate,
+                item.FetchedAt,
+                item.JsonPayload))
+            .ToArray();
+
+        return new NasaDonkiEventDetailResponse(
+            feed.EventType,
+            feed.DisplayName,
+            feed.Accent,
+            windowStart,
+            windowEnd,
+            events);
+    }
+
     private static LatestApodImage? ToImage(NasaApodImage? apod)
     {
         return apod?.ImageBytes is null || apod.ContentType is null

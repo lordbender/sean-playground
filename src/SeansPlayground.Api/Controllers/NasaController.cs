@@ -15,6 +15,17 @@ public sealed class NasaController(INasaDashboardService nasaDashboardService) :
         return Ok(await nasaDashboardService.GetDashboardAsync(cancellationToken));
     }
 
+    [ProducesResponseType<NasaDonkiEventDetailResponse>(StatusCodes.Status200OK)]
+    [HttpGet("donki/{eventType}/events")]
+    public async Task<IActionResult> GetDonkiEvents(
+        string eventType,
+        [FromQuery] DateOnly? startDate,
+        [FromQuery] DateOnly? endDate,
+        CancellationToken cancellationToken)
+    {
+        return Ok(await nasaDashboardService.GetDonkiEventDetailsAsync(eventType, startDate, endDate, cancellationToken));
+    }
+
     [Produces("image/jpeg", "image/png", "image/webp")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
