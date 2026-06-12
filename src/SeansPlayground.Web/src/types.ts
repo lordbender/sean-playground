@@ -79,6 +79,7 @@ export type NasaDonkiSeries = {
 
 export type NasaDashboard = {
   latestApod?: NasaApod;
+  recentApods: NasaApod[];
   donkiSeries: NasaDonkiSeries[];
   windowStart: string;
   windowEnd: string;

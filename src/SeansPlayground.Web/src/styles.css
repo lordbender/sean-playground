@@ -478,6 +478,7 @@ body {
 }
 
 .apodMedia {
+  position: relative;
   min-height: 430px;
   background:
     radial-gradient(circle at 20% 20%, rgba(242, 193, 78, 0.44), transparent 24%),
@@ -501,6 +502,35 @@ body {
   color: #fff8e8;
   font-size: 22px;
   font-weight: 900;
+}
+
+.apodControls {
+  position: absolute;
+  left: 18px;
+  right: 18px;
+  bottom: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  max-width: 260px;
+  padding: 8px;
+  border-radius: 8px;
+  color: #fff8e8;
+  background: rgba(37, 21, 47, 0.74);
+  border: 1px solid rgba(242, 193, 78, 0.46);
+  backdrop-filter: blur(8px);
+}
+
+.apodControls .MuiIconButton-root {
+  width: 38px;
+  height: 38px;
+  color: #fff8e8;
+  background: rgba(255, 248, 232, 0.14);
+}
+
+.apodControls .MuiIconButton-root.Mui-disabled {
+  color: rgba(255, 248, 232, 0.36);
 }
 
 .apodContent {
@@ -529,6 +559,51 @@ body {
 .apodExplanation {
   color: var(--mui-palette-text-secondary);
   line-height: 1.7 !important;
+}
+
+.apodThumbRail {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(64px, 1fr));
+  gap: 10px;
+  padding-top: 4px;
+}
+
+.apodThumbRail button {
+  appearance: none;
+  min-width: 0;
+  display: grid;
+  gap: 6px;
+  padding: 6px;
+  border-radius: 8px;
+  border: 1px solid rgba(91, 26, 142, 0.16);
+  color: var(--sp-ink);
+  background: rgba(255, 255, 255, 0.58);
+  cursor: pointer;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 900;
+  text-align: center;
+}
+
+.apodThumbRail button.active {
+  border-color: var(--sp-gold-deep);
+  box-shadow: 0 0 0 2px rgba(242, 193, 78, 0.32);
+  background: rgba(242, 193, 78, 0.18);
+}
+
+.apodThumbRail img {
+  width: 100%;
+  aspect-ratio: 1.25;
+  display: block;
+  object-fit: cover;
+  border-radius: 6px;
+  background: rgba(91, 26, 142, 0.16);
+}
+
+.apodThumbRail span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .nasaAnalyticsGrid {
@@ -1223,6 +1298,10 @@ body {
   .apodCard {
     grid-template-columns: 1fr;
   }
+
+  .apodThumbRail {
+    grid-template-columns: repeat(5, minmax(58px, 1fr));
+  }
 }
 
 @media (max-width: 780px) {
@@ -1292,6 +1371,10 @@ body {
   .registrationNameGrid,
   .loginPage {
     grid-template-columns: 1fr;
+  }
+
+  .apodThumbRail {
+    grid-template-columns: repeat(2, minmax(96px, 1fr));
   }
 
   .backgroundHero,

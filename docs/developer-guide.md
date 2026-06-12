@@ -368,6 +368,8 @@ Docker maps those values into the API as `DataGov__ApiKey` and `Nasa__ApiKey`. T
 
 APOD uses `Nasa__BaseUrl`, which defaults to `https://api.nasa.gov`. DONKI uses `Nasa__DonkiBaseUrl`, which defaults to the CCMC backend `https://kauai.ccmc.gsfc.nasa.gov/DONKI/WS/get` because the `api.nasa.gov/DONKI/*` proxy may return upstream `503` errors even when the API key is valid.
 
+The NASA hosted service runs once on API startup and then daily. APOD records are stored in Postgres with image bytes under `nasa.apod_images`; the dashboard carousel reads the 10 newest stored image rows. The ingestion pass checks a wider recent APOD window so the carousel can remain full when NASA returns a transient `503` or a non-image APOD for a date.
+
 ## Keycloak
 
 The local realm import lives in:

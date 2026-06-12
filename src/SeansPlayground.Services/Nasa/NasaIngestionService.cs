@@ -12,6 +12,8 @@ public sealed class NasaIngestionService(
     IConfiguration configuration,
     ILogger<NasaIngestionService> logger) : INasaIngestionService
 {
+    private const int ApodBackfillDayCount = 14;
+
     public async Task RefreshAsync(CancellationToken cancellationToken)
     {
         if (string.IsNullOrWhiteSpace(configuration["Nasa:ApiKey"] ?? configuration["DataGov:ApiKey"]))
@@ -42,15 +44,40 @@ public sealed class NasaIngestionService(
 
     private async Task RefreshApodAsync(DateOnly today, CancellationToken cancellationToken)
     {
-        if (await dbContext.NasaApodImages.AnyAsync(item => item.ApodDate == today, cancellationToken))
+        var dates = Enumerable.Range(0, ApodBackfillDayCount)
+            .Select(offset => today.AddDays(-offset))
+            .Order()
+            .ToArray();
+
+        foreach (var date in dates)
+        {
+            try
+            {
+                await RefreshApodDateAsync(date, cancellationToken);
+            }
+            catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "NASA APOD ingestion failed for {ApodDate}.", date);
+            }
+        }
+    }
+
+    private async Task RefreshApodDateAsync(DateOnly apodDate, CancellationToken cancellationToken)
+    {
+        if (await dbContext.NasaApodImages.AnyAsync(item => item.ApodDate == apodDate, cancellationToken))
         {
             return;
         }
 
-        var apod = await nasaApiClient.GetApodAsync(today, cancellationToken);
+        var apod = await nasaApiClient.GetApodAsync(apodDate, cancellationToken);
 
         if (apod is null)
         {
+            logger.LogWarning("NASA APOD did not return data for {ApodDate}.", apodDate);
             return;
         }
 
@@ -77,6 +104,7 @@ public sealed class NasaIngestionService(
         });
 
         await dbContext.SaveChangesAsync(cancellationToken);
+        logger.LogInformation("Stored NASA APOD for {ApodDate} with media type {MediaType}.", apod.Date, apod.MediaType);
     }
 
     private async Task RefreshDonkiFeedAsync(

@@ -1,7 +1,10 @@
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Chip from "@mui/material/Chip";
+import IconButton from "@mui/material/IconButton";
 import LinearProgress from "@mui/material/LinearProgress";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
@@ -10,7 +13,7 @@ import { DashboardLayout } from "../components/DashboardLayout";
 import { AppSection } from "../App";
 import { NasaDashboard, NasaDonkiSeries, SystemStatus } from "../types";
 
-const apiBaseUrl = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:5100";
+const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL ?? "http://localhost:5100").replace(/\/$/, "");
 
 type DashboardPageProps = {
   activeSection: AppSection;
@@ -22,6 +25,7 @@ type DashboardPageProps = {
 export function DashboardPage({ activeSection, isNavCollapsed, onNavigate, onToggleNavigation }: DashboardPageProps) {
   const [dashboard, setDashboard] = useState<NasaDashboard | null>(null);
   const [status, setStatus] = useState<SystemStatus | null>(null);
+  const [activeApodIndex, setActiveApodIndex] = useState(0);
 
   useEffect(() => {
     Promise.all([
@@ -30,6 +34,7 @@ export function DashboardPage({ activeSection, isNavCollapsed, onNavigate, onTog
     ]).then(([dashboardResponse, statusResponse]) => {
       setDashboard(dashboardResponse);
       setStatus(statusResponse);
+      setActiveApodIndex(0);
     });
   }, []);
 
@@ -55,35 +60,11 @@ export function DashboardPage({ activeSection, isNavCollapsed, onNavigate, onTog
 
       {dashboard ? (
         <Box className="nasaDashboard">
-          <Card className="apodCard">
-            <Box className="apodMedia">
-              {dashboard.latestApod?.imageUrl ? (
-                <img
-                  src={`${apiBaseUrl}${dashboard.latestApod.imageUrl}`}
-                  alt={dashboard.latestApod.title}
-                />
-              ) : (
-                <Box className="apodPlaceholder">Awaiting APOD image</Box>
-              )}
-            </Box>
-            <CardContent className="apodContent">
-              <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
-                <Chip label="Astronomy Picture of the Day" className="spaceChip" />
-                {dashboard.latestApod ? <Chip label={formatDate(dashboard.latestApod.date)} className="spaceChip secondary" /> : null}
-              </Stack>
-              <Typography variant="h5" fontWeight={900}>
-                {dashboard.latestApod?.title ?? "NASA APOD"}
-              </Typography>
-              <Typography className="apodExplanation">
-                {dashboard.latestApod?.explanation ?? "The daily background worker will store the latest APOD image once NASA returns data."}
-              </Typography>
-              {dashboard.latestApod?.copyright ? (
-                <Typography color="text.secondary" fontWeight={700}>
-                  Credit: {dashboard.latestApod.copyright}
-                </Typography>
-              ) : null}
-            </CardContent>
-          </Card>
+          <ApodCarousel
+            apods={dashboard.recentApods.length > 0 ? dashboard.recentApods : dashboard.latestApod ? [dashboard.latestApod] : []}
+            activeIndex={activeApodIndex}
+            onActiveIndexChange={setActiveApodIndex}
+          />
 
           <Box className="nasaAnalyticsGrid">
             <DonkiTrendChart series={dashboard.donkiSeries} windowStart={dashboard.windowStart} windowEnd={dashboard.windowEnd} />
@@ -100,6 +81,91 @@ export function DashboardPage({ activeSection, isNavCollapsed, onNavigate, onTog
         <Box className="loadingPanel">Loading dashboard</Box>
       )}
     </DashboardLayout>
+  );
+}
+
+function ApodCarousel({
+  activeIndex,
+  apods,
+  onActiveIndexChange
+}: {
+  activeIndex: number;
+  apods: NonNullable<NasaDashboard["latestApod"]>[];
+  onActiveIndexChange: (index: number) => void;
+}) {
+  const selectedApod = apods[Math.min(activeIndex, Math.max(apods.length - 1, 0))];
+  const canGoPrevious = activeIndex > 0;
+  const canGoNext = activeIndex < apods.length - 1;
+
+  const movePrevious = () => {
+    onActiveIndexChange(Math.max(0, activeIndex - 1));
+  };
+
+  const moveNext = () => {
+    onActiveIndexChange(Math.min(apods.length - 1, activeIndex + 1));
+  };
+
+  return (
+    <Card className="apodCard">
+      <Box className="apodMedia">
+        {selectedApod?.imageUrl ? (
+          <img
+            key={selectedApod.date}
+            src={`${apiBaseUrl}${selectedApod.imageUrl}`}
+            alt={selectedApod.title}
+          />
+        ) : (
+          <Box className="apodPlaceholder">Awaiting APOD image</Box>
+        )}
+        {apods.length > 1 ? (
+          <Box className="apodControls" aria-label="APOD carousel controls">
+            <IconButton aria-label="Previous APOD image" onClick={movePrevious} disabled={!canGoPrevious}>
+              <ChevronLeftIcon />
+            </IconButton>
+            <Typography fontWeight={900}>
+              {activeIndex + 1} / {apods.length}
+            </Typography>
+            <IconButton aria-label="Next APOD image" onClick={moveNext} disabled={!canGoNext}>
+              <ChevronRightIcon />
+            </IconButton>
+          </Box>
+        ) : null}
+      </Box>
+      <CardContent className="apodContent">
+        <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+          <Chip label="Astronomy Picture of the Day" className="spaceChip" />
+          {selectedApod ? <Chip label={formatDate(selectedApod.date)} className="spaceChip secondary" /> : null}
+          {apods.length > 1 ? <Chip label={`Last ${apods.length} stored images`} className="spaceChip" /> : null}
+        </Stack>
+        <Typography variant="h5" fontWeight={900}>
+          {selectedApod?.title ?? "NASA APOD"}
+        </Typography>
+        <Typography className="apodExplanation">
+          {selectedApod?.explanation ?? "The daily background worker will store the latest APOD image once NASA returns data."}
+        </Typography>
+        {selectedApod?.copyright ? (
+          <Typography color="text.secondary" fontWeight={700}>
+            Credit: {selectedApod.copyright}
+          </Typography>
+        ) : null}
+        {apods.length > 1 ? (
+          <Box className="apodThumbRail" aria-label="Recent APOD images">
+            {apods.map((apod, index) => (
+              <button
+                className={index === activeIndex ? "active" : ""}
+                key={apod.date}
+                type="button"
+                onClick={() => onActiveIndexChange(index)}
+                aria-label={`Show APOD from ${formatDate(apod.date)}`}
+              >
+                <img src={`${apiBaseUrl}${apod.imageUrl}`} alt="" loading="lazy" />
+                <span>{formatShortDate(apod.date)}</span>
+              </button>
+            ))}
+          </Box>
+        ) : null}
+      </CardContent>
+    </Card>
   );
 }
 
@@ -274,6 +340,10 @@ function DonkiCard({ series, windowStart, windowEnd }: { series: NasaDonkiSeries
 
 function formatDate(value: string) {
   return new Intl.DateTimeFormat(undefined, { month: "short", day: "numeric", year: "numeric" }).format(new Date(`${value}T00:00:00Z`));
+}
+
+function formatShortDate(value: string) {
+  return new Intl.DateTimeFormat(undefined, { month: "short", day: "numeric" }).format(new Date(`${value}T00:00:00Z`));
 }
 
 function formatDateTime(value?: string) {

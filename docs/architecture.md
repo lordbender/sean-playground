@@ -112,6 +112,8 @@ NasaDailyIngestionHostedService
   -> Postgres nasa.donki_events, including raw JSON payload
 ```
 
+The APOD ingestion pass backfills a recent multi-day window and stores rows idempotently by APOD date. The dashboard displays the latest stored image by default and exposes a carousel of the 10 newest stored APOD images. Individual NASA APOD outages are logged per date so one failed image does not stop the rest of the daily ingestion pass.
+
 The dashboard reads from Postgres, not directly from NASA. This keeps page loads fast, avoids leaking API keys to the browser, and lets the app survive NASA API outages with the most recently stored data.
 
 DONKI uses the CCMC backend directly because the `api.nasa.gov/DONKI/*` proxy can return upstream `503` responses even with a valid API key.

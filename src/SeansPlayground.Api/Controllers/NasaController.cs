@@ -23,6 +23,22 @@ public sealed class NasaController(INasaDashboardService nasaDashboardService) :
     {
         var image = await nasaDashboardService.GetLatestApodImageAsync(cancellationToken);
 
+        return ToApodImageResult(image);
+    }
+
+    [Produces("image/jpeg", "image/png", "image/webp")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [HttpGet("apod/{date}/image")]
+    public async Task<IActionResult> GetApodImage(DateOnly date, CancellationToken cancellationToken)
+    {
+        var image = await nasaDashboardService.GetApodImageAsync(date, cancellationToken);
+
+        return ToApodImageResult(image);
+    }
+
+    private IActionResult ToApodImageResult(LatestApodImage? image)
+    {
         if (image is null)
         {
             return NotFound();

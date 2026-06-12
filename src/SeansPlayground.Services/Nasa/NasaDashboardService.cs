@@ -11,11 +11,29 @@ public sealed class NasaDashboardService(PlaygroundDbContext dbContext) : INasaD
     {
         var today = DateOnly.FromDateTime(DateTime.UtcNow);
         var windowStart = today.AddDays(-29);
-        var latestApod = await dbContext.NasaApodImages
+        var recentApods = await dbContext.NasaApodImages
             .AsNoTracking()
             .Where(item => item.ImageBytes != null)
             .OrderByDescending(item => item.ApodDate)
-            .FirstOrDefaultAsync(cancellationToken);
+            .Take(10)
+            .ToListAsync(cancellationToken);
+        var latestApod = recentApods.FirstOrDefault();
+
+        if (latestApod is null)
+        {
+            latestApod = await dbContext.NasaApodImages
+                .AsNoTracking()
+                .Where(item => item.ImageBytes != null)
+                .OrderByDescending(item => item.ApodDate)
+                .FirstOrDefaultAsync(cancellationToken);
+        }
+
+        if (recentApods.Count == 0 && latestApod is not null)
+        {
+            recentApods.Add(latestApod);
+        }
+
+        var recentApodDtos = recentApods.Select(ToApodDto).ToArray();
 
         var events = await dbContext.NasaDonkiEvents
             .AsNoTracking()
@@ -29,6 +47,7 @@ public sealed class NasaDashboardService(PlaygroundDbContext dbContext) : INasaD
 
         return new NasaDashboardResponse(
             latestApod is null ? null : ToApodDto(latestApod),
+            recentApodDtos,
             series,
             windowStart,
             today,
@@ -43,9 +62,24 @@ public sealed class NasaDashboardService(PlaygroundDbContext dbContext) : INasaD
             .OrderByDescending(item => item.ApodDate)
             .FirstOrDefaultAsync(cancellationToken);
 
-        return latestApod?.ImageBytes is null || latestApod.ContentType is null
+        return ToImage(latestApod);
+    }
+
+    public async Task<LatestApodImage?> GetApodImageAsync(DateOnly apodDate, CancellationToken cancellationToken)
+    {
+        var apod = await dbContext.NasaApodImages
+            .AsNoTracking()
+            .Where(item => item.ApodDate == apodDate && item.ImageBytes != null && item.ContentType != null)
+            .FirstOrDefaultAsync(cancellationToken);
+
+        return ToImage(apod);
+    }
+
+    private static LatestApodImage? ToImage(NasaApodImage? apod)
+    {
+        return apod?.ImageBytes is null || apod.ContentType is null
             ? null
-            : new LatestApodImage(latestApod.ContentType, latestApod.ImageBytes, latestApod.ApodDate);
+            : new LatestApodImage(apod.ContentType, apod.ImageBytes, apod.ApodDate);
     }
 
     private static NasaDonkiSeriesDto BuildSeries(
@@ -77,7 +111,7 @@ public sealed class NasaDashboardService(PlaygroundDbContext dbContext) : INasaD
             feed.DisplayName,
             feed.Accent,
             events.Count,
-            events.Max(item => item.OccurredAt),
+            events.Count == 0 ? null : events.Max(item => item.OccurredAt),
             dailyCounts,
             recentEvents);
     }
@@ -92,7 +126,7 @@ public sealed class NasaDashboardService(PlaygroundDbContext dbContext) : INasaD
             apod.MediaType,
             apod.SourceUrl,
             apod.HdUrl,
-            "/api/nasa/apod/latest/image",
+            $"/api/nasa/apod/{apod.ApodDate:yyyy-MM-dd}/image",
             apod.FetchedAt);
     }
 }
