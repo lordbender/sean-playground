@@ -7,7 +7,6 @@ using SeansPlayground.Contracts;
 using SeansPlayground.Core.Data;
 using SeansPlayground.Core.Playground;
 using SeansPlayground.Services;
-using SeansPlayground.Services.Dashboard;
 
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("Postgres")
@@ -103,16 +102,6 @@ app.MapGet("/health", () => Results.Ok(new { status = "ok", application = Playgr
     .WithSummary("Checks API process health.")
     .WithDescription("Returns a lightweight health response for Docker and reverse proxy checks.")
     .Produces(StatusCodes.Status200OK);
-
-app.MapGet("/api/dashboard/summary", (IPlaygroundDashboardService dashboardService) =>
-{
-    return Results.Ok(dashboardService.GetSummary());
-})
-    .WithName("GetDashboardSummary")
-    .WithTags("Dashboard")
-    .WithSummary("Gets the legacy dashboard summary.")
-    .WithDescription("Returns the original Materially-style dashboard card and chart data.")
-    .Produces<SeansPlayground.Contracts.Dashboard.DashboardSummaryResponse>(StatusCodes.Status200OK);
 
 app.MapGet("/api/system/status", async (PlaygroundDbContext dbContext, IConfiguration configuration, IWebHostEnvironment environment) =>
 {
