@@ -29,9 +29,29 @@ if [ -z "$REMOTE_HOST" ]; then
     exit 1
 fi
 
+SSH_CONTROL_DIR=$(mktemp -d "/tmp/sp-ssh.XXXXXX")
+SSH_CONTROL_PATH="${SSH_CONTROL_DIR}/c-%C"
+
+cleanup() {
+    ssh ${SSH_OPTS} -o ControlPath="$SSH_CONTROL_PATH" -O exit "$REMOTE_HOST" >/dev/null 2>&1 || true
+    rm -rf "$SSH_CONTROL_DIR"
+}
+
+trap cleanup EXIT INT TERM
+
+remote_ssh() {
+    ssh ${SSH_OPTS} \
+        -o ControlMaster=auto \
+        -o ControlPersist=10m \
+        -o ControlPath="$SSH_CONTROL_PATH" \
+        "$REMOTE_HOST" "$@"
+}
+
+RSYNC_SSH="ssh ${SSH_OPTS} -o ControlMaster=auto -o ControlPersist=10m -o ControlPath=${SSH_CONTROL_PATH}"
+
 printf "%s\n" "Deploying Sean's Playground to ${REMOTE_HOST}:${REMOTE_DIR}"
 
-ssh ${SSH_OPTS} "$REMOTE_HOST" \
+remote_ssh \
     "REMOTE_DIR='${REMOTE_DIR}' REMOTE_DOCKER_CONFIG='${REMOTE_DOCKER_CONFIG}' sh -s" <<'REMOTE'
 set -eu
 
@@ -60,7 +80,7 @@ printf "{}\n" > "${REMOTE_DOCKER_CONFIG}/config.json"
 REMOTE
 
 rsync -az --delete \
-    -e "ssh ${SSH_OPTS}" \
+    -e "$RSYNC_SSH" \
     --exclude ".git/" \
     --include ".env.example" \
     --exclude ".env" \
@@ -71,7 +91,7 @@ rsync -az --delete \
     --exclude "dist/" \
     "${ROOT_DIR}/" "${REMOTE_HOST}:${REMOTE_DIR}/"
 
-ssh ${SSH_OPTS} "$REMOTE_HOST" \
+remote_ssh \
     "REMOTE_DIR='${REMOTE_DIR}' REMOTE_DOCKER_CONFIG='${REMOTE_DOCKER_CONFIG}' sh -s" <<'REMOTE'
 set -eu
 
@@ -80,7 +100,7 @@ DOCKER_CONFIG="$REMOTE_DOCKER_CONFIG" docker compose -f docker-compose.home.yml 
 DOCKER_CONFIG="$REMOTE_DOCKER_CONFIG" docker compose -f docker-compose.home.yml ps
 REMOTE
 
-ssh ${SSH_OPTS} "$REMOTE_HOST" \
+remote_ssh \
     "PUBLIC_URL='${PUBLIC_URL}' REMOTE_DIR='${REMOTE_DIR}' REMOTE_DOCKER_CONFIG='${REMOTE_DOCKER_CONFIG}' sh -s" <<'REMOTE'
 set -eu
 

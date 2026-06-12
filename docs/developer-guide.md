@@ -188,6 +188,8 @@ make deploy-sacrates-cave
 
 The deploy target runs `scripts/deploy-sacrates-cave.sh`. It reads the target host from the ignored local `.env` value `SEANS_PLAYGROUND_LOCAL_DEV_SERVER`, syncs the repository while excluding local secrets and build output, preserves the remote `.env`, rebuilds `docker-compose.home.yml`, and verifies the public health endpoints.
 
+The deploy script reuses a temporary SSH control connection for the deploy run, so password-based SSH should prompt once and then share that authenticated connection across the remote setup, `rsync`, Docker rebuild, and health-check steps. For the smoothest long-term workflow, add an SSH key to the dev server and keep the private key in your local keychain or SSH agent.
+
 ## Running Pieces Separately
 
 The simplest local workflow is Docker-first with `make up`. If you want to run parts manually:
